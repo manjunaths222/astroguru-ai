@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroGuru AI - Vedic Astrology Analysis</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✨ AstroGuru AI</h1>
+            <p class="subtitle">Your Personal Vedic Astrology Guide</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Input Form -->
+            <div class="form-container" id="formContainer">
+                <h2>Enter Your Birth Details</h2>
+                <form id="birthForm">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dateOfBirth">Date of Birth *</label>
+                            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="timeOfBirth">Time of Birth * (IST)</label>
+                            <input type="time" id="timeOfBirth" name="timeOfBirth" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="placeOfBirth">Place of Birth *</label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="placeOfBirth" name="placeOfBirth" required 
+                                   placeholder="City, State, Country" autocomplete="off">
+                            <div id="suggestions" class="suggestions"></div>
+                        </div>
+                        <small>Start typing to see location suggestions</small>
+                        <input type="hidden" id="latitude" name="latitude">
+                        <input type="hidden" id="longitude" name="longitude">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="goals">Your Goals (Optional)</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="goals" value="career"> Career</label>
+                            <label><input type="checkbox" name="goals" value="marriage"> Marriage</label>
+                            <label><input type="checkbox" name="goals" value="health"> Health</label>
+                            <label><input type="checkbox" name="goals" value="finance"> Finance</label>
+                            <label><input type="checkbox" name="goals" value="education"> Education</label>
+                            <label><input type="checkbox" name="goals" value="love life"> Love Life</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <span class="btn-text">Get My Astrology Report</span>
+                        <span class="btn-loader" style="display: none;">⏳ Analyzing...</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Container -->
+            <div class="results-container" id="resultsContainer" style="display: none;">
+                <div class="results-header">
+                    <h2>Your Astrology Report</h2>
+                    <button class="btn-secondary" id="newAnalysisBtn">New Analysis</button>
+                </div>
+
+                <div class="loading" id="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Analyzing your birth chart... This may around 3-5 minutes.</p>
+                </div>
+
+                <div class="error-message" id="errorMessage" style="display: none;"></div>
+
+                <div class="chat-container" id="chatContainer">
+                    <div class="messages" id="messages"></div>
+                </div>
+
+                <div class="analysis-sections" id="analysisSections" style="display: none;">
+                    <div class="section" id="summarySection" style="display: none;">
+                        <h3>📋 Your Astrology Report</h3>
+                        <div class="section-content" id="summaryContent"></div>
+                    </div>
+
+                    <div class="expandable-sections" id="expandableSections" style="display: none;">
+                        <button class="btn-toggle" id="toggleDetailsBtn">
+                            <span>Show Detailed Analysis</span>
+                            <span style="display: none;">Hide Detailed Analysis</span>
+                        </button>
+
+                        <div class="detailed-sections" id="detailedSections" style="display: none;">
+                            <div class="section" id="chartSection" style="display: none;">
+                                <h3>📊 Birth Chart Analysis</h3>
+                                <div class="section-content" id="chartContent"></div>
+                            </div>
+
+                            <div class="section" id="dashaSection" style="display: none;">
+                                <h3>⏰ Current Life Period (Dasha)</h3>
+                                <div class="section-content" id="dashaContent"></div>
+                            </div>
+
+                            <div class="section" id="goalSection" style="display: none;">
+                                <h3>🎯 Goal-Specific Analysis</h3>
+                                <div class="section-content" id="goalContent"></div>
+                            </div>
+
+                            <div class="section" id="recommendationsSection" style="display: none;">
+                                <h3>💡 Recommendations & Remedies</h3>
+                                <div class="section-content" id="recommendationsContent"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Interface (shown after analysis) -->
+                <div class="chat-interface" id="chatInterface" style="display: none;">
+                    <h3>💬 Ask Questions About Your Report</h3>
+                    <div class="chat-messages-container" id="chatMessagesContainer">
+                        <div class="messages" id="chatMessages"></div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chatInput" placeholder="Ask a question about your astrology report..." class="chat-input">
+                        <button id="sendChatBtn" class="btn-primary">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Powered by AstroGuru AI | Vedic Astrology Analysis</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
+

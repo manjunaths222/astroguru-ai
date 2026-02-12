@@ -1,0 +1,31 @@
+# FastAPI and server
+fastapi==0.115.13
+uvicorn==0.34.3
+python-dotenv==1.1.0
+
+# Data validation
+pydantic==2.11.7
+pydantic-settings==2.6.1
+
+# LangGraph and LangChain
+langgraph==0.2.28
+langchain==0.3.0
+langchain-google-genai==2.0.0
+langchain-core==0.3.0
+
+# HTTP requests
+httpx==0.28.1
+
+# Logging
+python-json-logger==2.0.7
+
+# Astrology calculations
+jyotishganit==0.1.2  # High precision Vedic astrology calculations using NASA JPL ephemeris data
+pytz==2024.1  # Timezone support for birth time calculations
+# timezonefinder==6.2.0  # Optional: Accurate timezone lookup from coordinates (requires h3 which needs build tools)
+# Note: timezonefinder is optional - the code has a fallback mechanism if it's not installed
+
+# Testing
+pytest>=8.2.0,<9.0.0  # Compatible with pytest-asyncio 0.24.0
+pytest-asyncio==0.24.0
+
