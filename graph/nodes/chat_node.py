@@ -59,21 +59,25 @@ async def chat_node(state: AstroGuruState) -> Dict[str, Any]:
     
     logger.debug(f"Chat node: Message length: {len(user_message)}, analysis_complete: {analysis_complete}, message history: {len(messages)}")
     
-    # Build conversation with analysis context
-    conversation = [SystemMessage(content=CHAT_NODE_SYSTEM_PROMPT)]
-    
-    # Add analysis context if available
+    # Build system message - Gemini requires only ONE system message at position 0
+    # Combine the base prompt with context-specific instructions
     if analysis_context and analysis_complete:
         logger.info("Chat node: Using analysis context for response")
-        conversation.append(SystemMessage(
-            content=f"Analysis Context (User's Horoscope Analysis):\n{analysis_context}\n\nUse this context to answer questions about the user's specific horoscope. For general astrology questions, use your knowledge."
-        ))
+        system_content = f"""{CHAT_NODE_SYSTEM_PROMPT}
+
+Analysis Context (User's Horoscope Analysis):
+{analysis_context}
+
+Use this context to answer questions about the user's specific horoscope. For general astrology questions, use your knowledge."""
     else:
         # No analysis yet - general chat mode
         logger.info("Chat node: General chat mode (no analysis context)")
-        conversation.append(SystemMessage(
-            content="You are in general chat mode. Answer questions about Vedic astrology in general. If the user wants their horoscope analyzed, guide them to provide birth details (name, date of birth, time of birth, place of birth)."
-        ))
+        system_content = f"""{CHAT_NODE_SYSTEM_PROMPT}
+
+You are in general chat mode. Answer questions about Vedic astrology in general. If the user wants their horoscope analyzed, guide them to provide birth details (name, date of birth, time of birth, place of birth)."""
+    
+    # Build conversation - SystemMessage must be first (position 0) for Gemini
+    conversation = [SystemMessage(content=system_content)]
     
     # Add conversation history (last 10 messages)
     history_count = 0
