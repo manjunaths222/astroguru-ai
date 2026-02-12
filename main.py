@@ -1,5 +1,10 @@
 """FastAPI application for AstroGuru AI LangGraph"""
 
+# CRITICAL: Initialize ChatGoogleGenerativeAI BEFORE importing any graph modules
+# This resolves Pydantic v2 forward reference issues
+# The import itself triggers the initialization
+import utils.llm_init
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
