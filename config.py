@@ -32,7 +32,7 @@ class AstroConfig:
         GEMINI_MAX_TOKENS = int(os.getenv("GEMINI_MAX_TOKENS", "8192"))
         
         # Google AI API Key (for Gemini API)
-        GOOGLE_AI_API_KEY = os.getenv("GOOGLE_AI_API_KEY", "")
+        GOOGLE_AI_API_KEY = os.getenv("GEMINI_API_KEY", "")
         
         @classmethod
         def validate_google_credentials(cls) -> bool:
