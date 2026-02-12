@@ -3,8 +3,12 @@
 from typing import Dict, Any
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.caches import BaseCache
 from config import AstroConfig, logger
 from graph.state import AstroGuruState
+
+# Fix Pydantic v2 forward reference issue
+ChatGoogleGenerativeAI.model_rebuild()
 
 
 GOAL_ANALYSIS_NODE_SYSTEM_PROMPT = """
