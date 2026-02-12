@@ -4,12 +4,9 @@ from typing import Dict, Any
 import json
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_core.caches import BaseCache
+from langchain_core.caches import BaseCache  # Import to resolve Pydantic v2 forward reference
 from config import AstroConfig, logger
 from graph.state import AstroGuruState
-
-# Fix Pydantic v2 forward reference issue
-ChatGoogleGenerativeAI.model_rebuild()
 
 
 SUMMARIZER_NODE_SYSTEM_PROMPT = """

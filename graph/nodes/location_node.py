@@ -4,13 +4,10 @@ from typing import Dict, Any
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage
 from langchain_core.tools import StructuredTool
-from langchain_core.caches import BaseCache
+from langchain_core.caches import BaseCache  # Import to resolve Pydantic v2 forward reference
 from config import AstroConfig, logger
 from graph.state import AstroGuruState
 from tools.geocoding_tools import geocode_address, reverse_geocode
-
-# Fix Pydantic v2 forward reference issue
-ChatGoogleGenerativeAI.model_rebuild()
 
 
 LOCATION_NODE_SYSTEM_PROMPT = """
