@@ -314,46 +314,6 @@ def create_email_html(
             </div>
 """
     
-    if chart_html:
-        html_content += f"""
-            <div class="divider"></div>
-            
-            <div class="section">
-                <h2>📊 Birth Chart Analysis</h2>
-                <div>{chart_html}</div>
-            </div>
-"""
-    
-    if dasha_html:
-        html_content += f"""
-            <div class="divider"></div>
-            
-            <div class="section">
-                <h2>⏰ Current Life Period (Dasha)</h2>
-                <div>{dasha_html}</div>
-            </div>
-"""
-    
-    if goal_html:
-        html_content += f"""
-            <div class="divider"></div>
-            
-            <div class="section">
-                <h2>🎯 Goal-Specific Analysis</h2>
-                <div>{goal_html}</div>
-            </div>
-"""
-    
-    if recommendations_html:
-        html_content += f"""
-            <div class="divider"></div>
-            
-            <div class="section">
-                <h2>💡 Recommendations & Remedies</h2>
-                <div>{recommendations_html}</div>
-            </div>
-"""
-    
     html_content += """
         </div>
         
@@ -407,23 +367,15 @@ async def send_analysis_email(
             recommendations=recommendations
         )
         
-        # Create plain text version (simplified)
+        # Create plain text version (simplified - only summary)
         plain_text = f"""Dear {name},
 
 Thank you for using AstroGuru AI! Your personalized astrology analysis is ready.
 
 {summary}
-"""
-        if chart_analysis:
-            plain_text += f"\n\nBirth Chart Analysis:\n{chart_analysis}\n"
-        if dasha_analysis:
-            plain_text += f"\n\nCurrent Life Period:\n{dasha_analysis}\n"
-        if goal_analysis:
-            plain_text += f"\n\nGoal Analysis:\n{goal_analysis}\n"
-        if recommendations:
-            plain_text += f"\n\nRecommendations:\n{recommendations}\n"
-        
-        plain_text += "\n\n---\nAstroGuru AI - Your Personal Vedic Astrology Guide"
+
+---
+AstroGuru AI - Your Personal Vedic Astrology Guide"""
         
         # Prepare email parameters for Resend
         params = {
