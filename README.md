@@ -14,6 +14,7 @@ The system provides comprehensive astrology analysis including:
 6. **Location Resolution**: Automatically resolves place names to geographic coordinates using geocoding API
 7. **Chat with Context**: After analysis is complete, supports normal chat conversations with full context from the analysis
 8. **Timezone Correction**: Automatically validates and corrects timezone information
+9. **Email Reports**: Optional email delivery of complete astrology reports (users can choose to receive reports via email instead of waiting on screen)
 
 ## Prerequisites
 
@@ -74,9 +75,16 @@ GEMINI_MAX_TOKENS=8192
 PORT=8002
 DEBUG=false
 ENV=dev
+
+# Optional: Email Configuration (for sending reports via email using Resend)
+RESEND_API_KEY=re_your_api_key_here
+RESEND_FROM_EMAIL=onboarding@resend.dev
+RESEND_FROM_NAME=AstroGuru AI
 ```
 
-**Important**: Replace `your-google-ai-api-key-here` with your actual Google AI API key.
+**Important**: 
+- Replace `your-google-ai-api-key-here` with your actual Google AI API key.
+- For email functionality, get your Resend API key from [https://resend.com/api-keys](https://resend.com/api-keys) and verify your domain at [https://resend.com/domains](https://resend.com/domains). The free tier includes 3,000 emails/month.
 
 Alternatively, you can set environment variables directly:
 
@@ -131,9 +139,15 @@ The `--reload` flag enables auto-reload on code changes (useful for development)
 ```json
 {
   "message": "Hi, I'd like to get my horoscope analyzed",
-  "session_id": "optional-session-id"
+  "session_id": "optional-session-id",
+  "email": "user@example.com",
+  "send_email": true
 }
 ```
+
+**Email Fields** (optional):
+- `email`: Email address to send the report to
+- `send_email`: Boolean flag to enable email delivery (default: `false`)
 
 **Response**:
 ```json
@@ -196,7 +210,13 @@ The `--reload` flag enables auto-reload on code changes (useful for development)
    - Generate recommendations
    - Create comprehensive summary
 
-4. **Chat with Context**: After analysis is complete, you can ask questions:
+4. **Email Delivery** (Optional): Users can choose to receive the report via email:
+   - Check the "Send report to my email" checkbox
+   - Enter email address
+   - Report will be sent automatically when analysis completes
+   - Report is also displayed on screen for immediate viewing
+
+5. **Chat with Context**: After analysis is complete, you can ask questions:
    ```
    "What does my chart say about my career?"
    "Tell me about my current Dasha period"
@@ -274,6 +294,33 @@ The system uses `AstroGuruState` (TypedDict) to manage conversation state:
 - `DEBUG`: Enable debug mode (default: `false`)
 - `ENV`: Environment name (default: `dev`)
 
+### Email Configuration (Optional)
+
+To enable email delivery of reports, configure Resend settings:
+
+- `RESEND_API_KEY`: Your Resend API key (required for email functionality)
+- `RESEND_FROM_EMAIL`: From email address (must be a verified domain in Resend)
+- `RESEND_FROM_NAME`: From name (default: `"AstroGuru AI"`)
+
+**Resend Setup**:
+1. Sign up at [https://resend.com](https://resend.com)
+2. Get your API key from [https://resend.com/api-keys](https://resend.com/api-keys)
+3. Verify your domain at [https://resend.com/domains](https://resend.com/domains)
+   - For testing, you can use `onboarding@resend.dev` (Resend's test domain)
+   - For production, verify your own domain
+4. Set `RESEND_API_KEY` in your `.env` file
+
+**Resend Free Tier**:
+- 3,000 emails/month
+- 100 emails/day
+- Perfect for development and small-scale production
+
+**Benefits of Resend**:
+- Simple API (no SMTP configuration needed)
+- Better deliverability
+- Email tracking and analytics
+- Webhook support for delivery events
+
 ## Deployment
 
 The application is configured for deployment on **Render.com** using Docker.
@@ -294,6 +341,7 @@ The application is configured for deployment on **Render.com** using Docker.
    - `GEMINI_MODEL`: gemini-2.0-flash-exp (optional)
    - `GEMINI_TEMPERATURE`: 0.2 (optional)
    - `GEMINI_MAX_TOKENS`: 8192 (optional)
+   - `RESEND_API_KEY`, `RESEND_FROM_EMAIL`: For email functionality (optional)
 
 4. **Deploy**: Render will automatically build and deploy your application
 
@@ -435,6 +483,9 @@ astroguru-ai-langgraph/
 │       ├── recommendation_node.py # Recommendations
 │       ├── summarizer_node.py     # Summary generation
 │       └── chat_node.py           # Chat with context
+├── services/
+│   ├── __init__.py
+│   └── email_service.py      # Email service for sending reports
 └── tools/
     ├── __init__.py
     ├── geocoding_tools.py    # Geocoding API tools

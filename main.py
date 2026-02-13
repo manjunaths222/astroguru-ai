@@ -15,13 +15,17 @@ from contextlib import asynccontextmanager
 from config import logger, AstroConfig
 from graph.workflow import create_astroguru_graph
 from graph.state import AstroGuruState
+from services.email_service import send_analysis_email
 import os
+import asyncio
 
 
 # Request/Response models
 class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None  # For future session management
+    email: Optional[str] = None  # Email address for sending report
+    send_email: bool = False  # Flag to indicate if email should be sent
 
 
 class ChatResponse(BaseModel):
@@ -250,6 +254,25 @@ async def chat(request: ChatRequest):
             recommendations = recommendation_data.get("recommendations")
         
         logger.info(f"Chat response prepared - analysis_complete: {analysis_complete}, summary_length: {len(summary) if summary else 0}, chart_analysis: {bool(chart_data_analysis)}, dasha_analysis: {bool(dasha_analysis)}, goal_analysis: {bool(goal_analysis)}, recommendations: {bool(recommendations)}")
+        
+        # Send email if requested and analysis is complete
+        if analysis_complete and request.send_email and request.email and summary:
+            birth_details = result.get("birth_details")
+            user_name = birth_details.get('name', 'User') if birth_details else 'User'
+            
+            # Send email asynchronously (don't block response)
+            asyncio.create_task(
+                send_analysis_email(
+                    email=request.email,
+                    name=user_name,
+                    summary=summary,
+                    chart_analysis=chart_data_analysis,
+                    dasha_analysis=dasha_analysis,
+                    goal_analysis=goal_analysis,
+                    recommendations=recommendations
+                )
+            )
+            logger.info(f"Email sending task created for {request.email} (user: {user_name})")
         
         return ChatResponse(
             response=response_text,

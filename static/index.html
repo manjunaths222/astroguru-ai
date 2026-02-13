@@ -49,8 +49,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="goals">Your Goals (Optional)</label>
-                        <div class="checkbox-group">
+                        <label for="goals">Your Goals *</label>
+                        <div class="checkbox-group" id="goalsGroup">
                             <label><input type="checkbox" name="goals" value="career"> Career</label>
                             <label><input type="checkbox" name="goals" value="marriage"> Marriage</label>
                             <label><input type="checkbox" name="goals" value="health"> Health</label>
@@ -58,6 +58,20 @@
                             <label><input type="checkbox" name="goals" value="education"> Education</label>
                             <label><input type="checkbox" name="goals" value="love life"> Love Life</label>
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sendEmailCheckbox" class="checkbox-label">
+                            <input type="checkbox" id="sendEmailCheckbox" name="sendEmail">
+                            <span>📧 Send report to my email (Recommended: Reporting takes around 3-5 minutes)</span>
+                        </label>
+                        <small>Get your analysis delivered to your inbox when ready</small>
+                    </div>
+
+                    <div class="form-group" id="emailInputGroup" style="display: none;">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+                        <small>We'll send your complete astrology report to this email</small>
                     </div>
 
                     <button type="submit" class="btn-primary" id="submitBtn">

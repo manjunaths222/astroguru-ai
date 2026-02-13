@@ -51,6 +51,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup new analysis button
     newAnalysisBtn.addEventListener('click', resetForm);
     
+    // Setup email checkbox
+    const sendEmailCheckbox = document.getElementById('sendEmailCheckbox');
+    const emailInputGroup = document.getElementById('emailInputGroup');
+    const emailInput = document.getElementById('email');
+    
+    if (sendEmailCheckbox && emailInputGroup && emailInput) {
+        sendEmailCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                emailInputGroup.style.display = 'block';
+                emailInput.required = true;
+            } else {
+                emailInputGroup.style.display = 'none';
+                emailInput.required = false;
+                emailInput.value = '';
+            }
+        });
+    }
+    
     // Setup toggle details button
     if (toggleDetailsBtn) {
         toggleDetailsBtn.addEventListener('click', () => {
@@ -244,11 +262,34 @@ async function handleFormSubmit(e) {
     const latitude = formData.get('latitude');
     const longitude = formData.get('longitude');
     const goals = Array.from(formData.getAll('goals'));
+    const sendEmail = document.getElementById('sendEmailCheckbox').checked;
+    const email = sendEmail ? formData.get('email') : null;
     
     // Validate
     if (!name || !dateOfBirth || !timeOfBirth || !placeOfBirth) {
         showError('Please fill in all required fields.');
         return;
+    }
+    
+    // Validate goals - at least one must be selected
+    if (goals.length === 0) {
+        showError('Please select at least one goal.');
+        return;
+    }
+    
+    // Validate email if email option is selected
+    if (sendEmail && !email) {
+        showError('Please provide your email address to receive the report.');
+        return;
+    }
+    
+    // Basic email validation
+    if (sendEmail && email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showError('Please enter a valid email address.');
+            return;
+        }
     }
     
     // Show results container
@@ -274,12 +315,17 @@ async function handleFormSubmit(e) {
     // Add user message
     addMessage('user', message);
     
+    // Show email confirmation message if email is selected
+    if (sendEmail && email) {
+        addMessage('assistant', `📧 Great! Your analysis is being prepared. We'll send it to ${email} when ready. You can also view it here once it's complete.`);
+    }
+    
     isAnalyzing = true;
     submitBtn.disabled = true;
     
     try {
-        // Send initial request
-        const response = await sendChatMessage(message);
+        // Send initial request with email options
+        const response = await sendChatMessage(message, sendEmail, email);
         
         // Add assistant response
         addMessage('assistant', response.response);
@@ -287,9 +333,13 @@ async function handleFormSubmit(e) {
         // If analysis is complete, show all sections
         if (response.analysis_complete) {
             displayAnalysisResults(response);
+            // Show email confirmation if email was sent
+            if (sendEmail && email) {
+                addMessage('assistant', `✅ Your complete astrology report has been sent to ${email}! You can also view it below.`);
+            }
         } else {
             // Continue conversation if needed
-            await continueAnalysis();
+            await continueAnalysis(sendEmail, email);
         }
         
         // Show chat interface immediately for continuous conversation
@@ -305,7 +355,7 @@ async function handleFormSubmit(e) {
 }
 
 // Continue analysis conversation
-async function continueAnalysis() {
+async function continueAnalysis(sendEmail = false, email = null) {
     let attempts = 0;
     const maxAttempts = 20;
     let lastResponse = '';
@@ -323,7 +373,7 @@ async function continueAnalysis() {
         await new Promise(resolve => setTimeout(resolve, 2000));
         
         try {
-            const response = await sendChatMessage('Please continue with the analysis.');
+            const response = await sendChatMessage('Please continue with the analysis.', sendEmail, email);
             
             // Hide loading indicator
             if (chatLoading) {
@@ -352,6 +402,10 @@ async function continueAnalysis() {
             
             if (response.analysis_complete) {
                 displayAnalysisResults(response);
+                // Show email confirmation if email was sent
+                if (sendEmail && email) {
+                    addMessage('assistant', `✅ Your complete astrology report has been sent to ${email}! You can also view it below.`);
+                }
                 break;
             }
             
@@ -385,16 +439,24 @@ async function continueAnalysis() {
 }
 
 // Send chat message to API
-async function sendChatMessage(message) {
+async function sendChatMessage(message, sendEmail = false, email = null) {
+    const requestBody = {
+        message: message,
+        session_id: sessionId
+    };
+    
+    // Add email fields if provided
+    if (sendEmail && email) {
+        requestBody.send_email = true;
+        requestBody.email = email;
+    }
+    
     const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            message: message,
-            session_id: sessionId
-        })
+        body: JSON.stringify(requestBody)
     });
     
     if (!response.ok) {
@@ -639,6 +701,17 @@ function resetForm() {
     // Clear hidden coordinate fields
     document.getElementById('latitude').value = '';
     document.getElementById('longitude').value = '';
+    
+    // Reset email fields
+    const sendEmailCheckbox = document.getElementById('sendEmailCheckbox');
+    const emailInput = document.getElementById('email');
+    const emailInputGroup = document.getElementById('emailInputGroup');
+    if (sendEmailCheckbox) sendEmailCheckbox.checked = false;
+    if (emailInput) {
+        emailInput.value = '';
+        emailInput.required = false;
+    }
+    if (emailInputGroup) emailInputGroup.style.display = 'none';
     
     // Reset loading states
     const chatLoading = document.getElementById('chatLoading');

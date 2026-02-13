@@ -16,6 +16,9 @@ langchain-core==0.3.0
 # HTTP requests
 httpx==0.28.1
 
+# Email
+resend==2.1.0
+
 # Logging
 python-json-logger==2.0.7
 

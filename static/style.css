@@ -89,7 +89,8 @@ label {
 
 input[type="text"],
 input[type="date"],
-input[type="time"] {
+input[type="time"],
+input[type="email"] {
     width: 100%;
     padding: 12px 16px;
     border: 2px solid var(--border);
@@ -209,6 +210,19 @@ small {
 .checkbox-group input[type="checkbox"] {
     width: auto;
     margin-right: 8px;
+    cursor: pointer;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
     cursor: pointer;
 }
 
