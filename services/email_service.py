@@ -1,11 +1,28 @@
-"""Email service for sending astrology analysis reports using Resend"""
+"""Email service for sending astrology analysis reports using multiple providers"""
 
 import os
 import re
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from typing import Optional
 from config import logger
-import resend
 from config import AstroConfig
+
+# Try to import optional dependencies
+try:
+    import resend
+    RESEND_AVAILABLE = True
+except ImportError:
+    RESEND_AVAILABLE = False
+    logger.warning("Resend package not installed. Install with: pip install resend")
+
+try:
+    import requests
+    REQUESTS_AVAILABLE = True
+except ImportError:
+    REQUESTS_AVAILABLE = False
+    logger.warning("Requests package not installed. Install with: pip install requests")
 
 
 def format_markdown_to_html(text: str) -> str:

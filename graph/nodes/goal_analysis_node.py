@@ -52,7 +52,7 @@ You MUST provide analysis for each goal with the following EXACT structure:
 ### 4. Forecast (Combining Dasha and Gochara)
    - **Short-term (0-2 years)**: [What to expect in the near term - reference specific Gochara transit dates]
    - **Medium-term (2-5 years)**: [What to expect in medium term - reference specific Gochara transit dates]
-   - **Long-term (5+ years)**: [Long-term prospects - reference specific Gochara transit dates]
+   - **Long-term (5-10 years)**: [Long-term prospects - reference specific Gochara transit dates]
 
 ### 5. Specific Timing (Based on Dasha and Gochara)
    - **Best Periods**: [Specific dates/periods for important activities - reference Gochara transit dates]

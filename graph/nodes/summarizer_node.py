@@ -98,9 +98,9 @@ Your role is to synthesize all the specialized analysis from previous nodes (loc
 [For EACH goal, provide a concise summary in simple, everyday language:
 - What your chart reveals about this area of life (3-5 sentences in plain language - avoid technical terms like "Dasha", "Gochara", "house", "Lagna" unless briefly explained)
 - What to expect:
-  - Short-term (next 1-2 years): [General trends and themes - use simple language like "upcoming months" or "next year" rather than specific dates]
-  - Medium-term (2-5 years): [Broader patterns and opportunities - focus on general timeframes, not exact dates]
-  - Long-term (5+ years): [Overall direction and potential - keep it high-level and encouraging]
+  - Short-term (next 1-2 years): [General trends and themes - describe what's happening now and in the near future, what opportunities or challenges are emerging, use simple language like "upcoming months" or "next year" rather than specific dates. Include 2-3 key points about immediate focus areas.]
+  - Medium-term (2-5 years): [Broader patterns and opportunities - describe evolving situations, potential growth areas, and how things might develop. Focus on general timeframes like "in the next few years" or "around mid-decade", not exact dates. Include 2-3 key developments to watch for.]
+  - Long-term (5-10 years): [Overall direction and potential - describe the bigger picture trajectory, major life themes, and where things are heading. Keep it high-level and encouraging, focusing on general direction rather than specifics. Include 1-2 key long-term themes.]
 - Best times to take action (mention only 2-3 key periods in general terms like "mid-2026" or "late 2027", not multiple specific dates)
 - Key challenges and opportunities (bullet points in simple language - avoid astrology jargon)
 - What to focus on (3-5 actionable points in everyday language)]
