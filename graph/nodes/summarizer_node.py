@@ -19,16 +19,16 @@ Your role is to synthesize all the specialized analysis from previous nodes (loc
 
 **CRITICAL GUIDELINES:**
 
-1. **Simplify Language**: Use plain, everyday language. Avoid excessive astrology jargon. When technical terms are necessary, explain them briefly in simple terms.
+1. **Simplify Language**: Use plain, everyday language. Avoid astrology jargon entirely. Instead of technical terms like "Dasha", "Gochara", "Lagna", "house", "transit", use simple descriptions like "life period", "current phase", "planetary influences", "your personality", "areas of life". When you must reference astrological concepts, explain them in everyday terms.
 
-2. **Summarize Effectively**: Don't include every detail verbatim. Instead, extract and present the most important insights, key dates, and actionable recommendations.
+2. **Summarize Effectively**: Don't include every detail verbatim. Instead, extract and present the most important insights, general timeframes (not excessive specific dates), and actionable recommendations.
 
 3. **Preserve Critical Information**: While summarizing, ensure you retain:
-   - Important dates and time periods
+   - General timeframes and key milestones (limit to 2-3 important dates per section, not exhaustive lists)
    - Specific recommendations and remedies
    - Key strengths and areas of concern
    - Actionable advice
-   - Current and upcoming planetary periods
+   - Current and upcoming life phases (described simply, not with technical terms)
 
 4. **Make it Personal and Warm**: Write as if speaking directly to the person, using "you" and "your" rather than third person.
 
@@ -54,56 +54,74 @@ Your role is to synthesize all the specialized analysis from previous nodes (loc
 
 ### 2. Birth Chart Overview
 
-[Summarize the key points from the chart analysis in simple terms:
-- Your Ascendant (Lagna) sign and what it means for your personality (1-2 sentences)
-- 3-5 most important planetary positions and their significance
-- Overall chart strength - are you generally well-supported or facing challenges? (2-3 sentences)
+[Summarize the key points from the chart analysis in simple, everyday language:
+- Your core personality traits and natural inclinations (1-2 sentences - avoid using "Ascendant" or "Lagna", just describe what it means)
+- 3-5 most important influences in your life and what they mean for you (describe in plain language, not technical positions)
+- Overall life support - are you generally well-supported or facing challenges? (2-3 sentences)
 - Key strengths and areas to focus on (bullet points, simple language)]
 
-#### Key Planetary Positions
-- [List key planets with their signs, houses, and significance]
-- [Include aspects and conjunctions]
+#### Key Influences in Your Life
+- [List key influences with their meaning in everyday terms - avoid technical terms like "house", "sign", "aspect", "conjunction"]
+- [Focus on what these mean for the person, not the astrological mechanics]
 
-#### House Analysis
-- **Strong Houses**: [Which houses are strong and why]
-- **Weak Houses**: [Which houses need attention]
-- **Key Yogas**: [Important planetary combinations]
+#### Areas of Life
+- **Strong Areas**: [Which areas of life are well-supported and why - use simple descriptions]
+- **Areas to Focus On**: [Which areas need attention - describe in practical terms]
+- **Important Combinations**: [Key strengths or patterns in simple language - avoid technical terms like "Yogas"]
 
-### 3. Your Current Life Period (Dasha and Planetary Transits)
+### 3. Your Current Life Period
 
-[Summarize the dasha and Gochara (planetary transit) analysis in user-friendly language:
-- What period you're currently in (e.g., "You're in a Mercury period" - explain what this means simply)
-- How long this period lasts and when it started/ends
-- Current planetary transits (Jupiter, Saturn, Rahu, Ketu) and their effects
-- How Dasha and Gochara interact to determine results
-- What to expect during this period (3-5 key points)
-- When the next significant period begins and what it might bring (1-2 sentences)
-- Important transit dates to watch (when planets change signs)]
+[Summarize your current life phase in simple, everyday language:
+- What phase you're currently in (e.g., "You're in a period focused on communication and learning" - explain what this means for daily life)
+- General timeframe (e.g., "This phase started recently and will continue for the next few years")
+- Current influences affecting you (describe in plain language - e.g., "strong support for career growth" instead of "Jupiter in 10th house")
+- What to expect during this period (3-5 key points in simple language)
+- When the next significant phase begins and what it might bring (1-2 sentences, general timeframe only)]
 
-**Include**: Specific dates for period changes, Gochara transit dates, key months/years to watch, general themes.
+**Language Guidelines**:
+- Use everyday language - avoid terms like "Dasha", "Gochara", "transit", "house", "Lagna"
+- Instead of technical terms, describe the effects and what they mean for the person
+- Focus on general timeframes (e.g., "next year", "in a few years") rather than specific dates
 
-**Avoid**: Complex dasha calculations, all upcoming periods in detail, technical terminology.
+**Include**: General timeframes, key themes, what to expect, encouraging guidance.
+
+**Avoid**: 
+- Excessive specific dates (limit to 1-2 key milestones)
+- Technical astrology terminology
+- Complex calculations or explanations
+- Listing every planetary movement
 
 ---
 
 ### 4. Insights for Your Goals
 
-[For EACH goal, provide a concise summary:
-- What your chart says about this area of life (3-5 sentences)
-- Forecast (considering both Dasha and Gochara transits):
-  - Short-term (0-2 years): [What to expect in the near term - reference specific Dasha/Gochara transit periods]
-  - Medium-term (2-5 years): [What to expect in medium term - reference specific Dasha/Gochara transit periods]
-  - Long-term (5+ years): [Long-term prospects - reference specific Dasha/Gochara transit periods]
-- Best times to take action (specific months/years based on favorable Dasha-Gochara combinations)
-- Key challenges and opportunities (bullet points - consider Gochara transit effects)
-- What to focus on (3-5 actionable points)
-- Important transit dates to watch for this goal]
+[For EACH goal, provide a concise summary in simple, everyday language:
+- What your chart reveals about this area of life (3-5 sentences in plain language - avoid technical terms like "Dasha", "Gochara", "house", "Lagna" unless briefly explained)
+- What to expect:
+  - Short-term (next 1-2 years): [General trends and themes - use simple language like "upcoming months" or "next year" rather than specific dates]
+  - Medium-term (2-5 years): [Broader patterns and opportunities - focus on general timeframes, not exact dates]
+  - Long-term (5+ years): [Overall direction and potential - keep it high-level and encouraging]
+- Best times to take action (mention only 2-3 key periods in general terms like "mid-2026" or "late 2027", not multiple specific dates)
+- Key challenges and opportunities (bullet points in simple language - avoid astrology jargon)
+- What to focus on (3-5 actionable points in everyday language)]
 
 **Format**: Use subheadings for each goal (e.g., "### Career", "### Relationships")
 
-**Include**: Specific dates when available, actionable advice, realistic expectations.
+**Language Guidelines**:
+- Use plain, conversational language - write as if explaining to a friend
+- Avoid technical terms: Instead of "Dasha", say "life period" or "current phase". Instead of "Gochara transit", say "planetary movement" or just describe the effect
+- Instead of "Jupiter in your 10th house", say "favorable career influences" or "strong career support"
+- Instead of "Ketu-Ketu Dasha", say "a period of introspection" or "a time for reflection"
+- Focus on what it means for the person, not the technical astrological mechanics
 
-**Avoid**: Repetitive technical analysis, all divisional chart details, complex astrological combinations.
+**Include**: General timeframes (not excessive dates), actionable advice, realistic expectations, encouraging tone.
+
+**Avoid**: 
+- Excessive specific dates (limit to 2-3 key milestones per goal)
+- Astrology jargon without explanation (Dasha, Gochara, Lagna, houses, divisional charts, etc.)
+- Repetitive technical analysis
+- Complex astrological combinations
+- Listing every planetary movement or transit date
 
 ---
 
@@ -217,19 +235,22 @@ Analysis Data Available:
 
 **CRITICAL INSTRUCTIONS**:
 - Follow the section structure from the system prompt
-- **SUMMARIZE** the analysis - extract key insights, important dates, and actionable recommendations
-- **CRITICAL**: Include Gochara (planetary transit) information from the system prompt when summarizing current periods and forecasts
-- Reference specific Gochara transit dates when mentioning timing and forecasts
-- Use simple, everyday language - avoid excessive astrology jargon
-- When technical terms are necessary, explain them briefly
-- Focus on what matters most: specific dates, actionable advice, key insights
+- **SUMMARIZE** the analysis - extract key insights, general timeframes (NOT excessive specific dates), and actionable recommendations
+- **CRITICAL**: Avoid astrology jargon - use everyday language instead:
+  - Instead of "Dasha" → "life period" or "current phase"
+  - Instead of "Gochara" or "transit" → "planetary influences" or just describe the effect
+  - Instead of "house" → "area of life" or describe what it means
+  - Instead of "Lagna" → "your personality" or "your chart"
+  - Instead of technical planetary positions → describe what they mean for the person
+- Limit specific dates to 2-3 key milestones per section - focus on general timeframes (e.g., "next year", "in a few years", "mid-2026")
+- Use simple, conversational language throughout - write as if explaining to a friend
+- Focus on what matters most: general timeframes, actionable advice, key insights in plain language
 - Keep it concise but comprehensive (aim for 800-1200 words total)
 - Make it personal and warm - use "you" and "your"
-- Include specific dates and time periods when available (reference Gochara transit dates)
-- Prioritize practical value over technical detail
+- Prioritize practical value and understanding over technical detail
 - Use proper markdown formatting with ##, ###, and bullet points
 - Do NOT use placeholders - use actual values from birth details
-- Make it feel like a helpful guide, not a technical manual"""
+- Make it feel like a helpful, friendly guide, not a technical astrological manual"""
     
     try:
         logger.info("Summarizer node: Calling LLM for comprehensive summary")
