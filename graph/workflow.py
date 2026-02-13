@@ -114,24 +114,30 @@ def create_astroguru_graph():
     
     # Chat node can loop back to itself, route to analysis, or end
     def route_after_chat(state: AstroGuruState) -> str:
-        """Route after chat: continue chatting, start analysis, or end"""
+        """Route after chat: continue chatting, start analysis, or end
+        
+        CRITICAL: This function must always end the workflow after processing a message
+        to prevent infinite loops. The chat node clears user_message after processing,
+        so this should always end unless explicitly routing to analysis.
+        """
         request_type = state.get("request_type")
         user_message = state.get("user_message", "").strip()
         analysis_complete = state.get("analysis_complete", False)
         
         # If user wants analysis and it's not complete, route directly to main (skip router to avoid loop)
         if request_type == "analysis" and not analysis_complete:
-            logger.info("After chat: User requested analysis, routing directly to main node (clearing request_type)")
-            # Clear request_type to prevent loops - we're going to main now
+            logger.info("After chat: User requested analysis, routing directly to main node")
             return "main"
         
-        # If there's a user message and we're not starting analysis, continue chatting
-        if user_message and request_type != "analysis":
-            logger.info("After chat: User has message, continuing chat")
-            return "chat"
+        # SAFETY CHECK: If user_message still exists (shouldn't happen after chat_node processes),
+        # log warning and end to prevent infinite loop
+        if user_message:
+            logger.warning(f"After chat: user_message still exists (should have been cleared): '{user_message[:50]}...'. Ending to prevent loop.")
+            return "end"
         
-        # Otherwise end
-        logger.info("After chat: No user message or analysis requested, ending")
+        # Normal case: user_message was cleared by chat_node, so end the workflow
+        # User's next message will come in a new API call, which will start at router
+        logger.info("After chat: Message processed, user_message cleared, ending workflow. Next message will start fresh at router.")
         return "end"
     
     workflow.add_conditional_edges(

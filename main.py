@@ -165,13 +165,19 @@ async def chat(request: ChatRequest):
         if session_id in _sessions:
             existing_state = _sessions[session_id]
             analysis_complete = existing_state.get('analysis_complete', False)
-            logger.info(f"Found existing session: {session_id}, analysis_complete: {analysis_complete}")
+            existing_messages = existing_state.get('messages', [])
+            logger.info(f"Found existing session: {session_id}, analysis_complete: {analysis_complete}, conversation history: {len(existing_messages)} messages")
             # Update with new message and clear request_type to let router decide
+            # CRITICAL: Preserve all existing state including messages, birth_details, analysis_context, etc.
             initial_state: AstroGuruState = {
                 **existing_state,
                 "user_message": request.message,
                 "request_type": None  # Clear to let router decide based on current state
             }
+            # Explicitly ensure messages are preserved (defensive programming)
+            if "messages" not in initial_state or not initial_state.get("messages"):
+                initial_state["messages"] = existing_messages
+                logger.warning(f"Messages were not preserved, restoring from existing state: {len(existing_messages)} messages")
         else:
             # Initialize new state
             logger.info(f"Creating new session: {session_id}")

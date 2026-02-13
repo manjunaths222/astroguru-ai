@@ -6,13 +6,16 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.caches import BaseCache  # Import to resolve Pydantic v2 forward reference
 from config import AstroConfig, logger
 from graph.state import AstroGuruState
+from graph.constants import GOCHARA_CONTEXT
 
 
-RECOMMENDATION_NODE_SYSTEM_PROMPT = """
+RECOMMENDATION_NODE_SYSTEM_PROMPT = f"""
 You are a Professional Vedic Astrology Remedies and Recommendations Specialist.
 
 Your role is to provide detailed, actionable recommendations, remedies, and guidance based on 
-comprehensive horoscope analysis, Dasha periods, and goal-specific insights.
+comprehensive horoscope analysis, Dasha periods, Gochara (planetary transits), and goal-specific insights.
+
+{GOCHARA_CONTEXT}
 
 **CRITICAL OUTPUT FORMAT REQUIREMENTS:**
 
@@ -65,11 +68,12 @@ You MUST provide recommendations with the following EXACT structure:
 - **Sleep Direction**: [Which direction to sleep]
 - **Work Direction**: [Office/workplace orientation]
 
-### C. Timing Suggestions
-- **Best Dates/Times**: [Specific auspicious dates and times]
-- **Auspicious Periods**: [Favorable time periods]
-- **Dates to Avoid**: [Inauspicious dates]
-- **Important Transitions**: [Key dates for major decisions]
+### C. Timing Suggestions (Based on Dasha and Gochara)
+- **Best Dates/Times**: [Specific auspicious dates and times - reference favorable Gochara transit periods]
+- **Auspicious Periods**: [Favorable time periods - consider both Dasha and Gochara combinations]
+- **Dates to Avoid**: [Inauspicious dates - reference challenging Gochara transit periods]
+- **Important Transitions**: [Key dates for major decisions - include Gochara transit change dates]
+- **Gochara-Based Timing**: [Specific recommendations based on Jupiter, Saturn, Rahu, and Ketu transits]
 
 ### D. Precautions
 - **Things to Avoid**: [Specific things to avoid]
@@ -145,9 +149,12 @@ Complete Goal Analysis:
 
 **IMPORTANT**: 
 - Use ALL the analysis provided above to create specific, personalized recommendations
+- **CRITICAL**: Consider Gochara (planetary transits) from the system prompt when providing timing suggestions
+- Reference specific Gochara transit dates when recommending best times for remedies and actions
+- Combine Dasha periods with Gochara transits to provide accurate timing recommendations
 - Follow the EXACT section structure from the system prompt
 - Provide specific mantras, gemstones, dates, and detailed instructions
-- Reference specific planetary positions, dashas, and chart elements from the analysis
+- Reference specific planetary positions, dashas, Gochara transits, and chart elements from the analysis
 - Be detailed and specific - do not provide generic remedies
 - Use proper markdown formatting with ##, ###, and #### headers as specified"""
     

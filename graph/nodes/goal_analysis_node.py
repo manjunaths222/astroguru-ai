@@ -6,9 +6,10 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.caches import BaseCache  # Import to resolve Pydantic v2 forward reference
 from config import AstroConfig, logger
 from graph.state import AstroGuruState
+from graph.constants import GOCHARA_CONTEXT
 
 
-GOAL_ANALYSIS_NODE_SYSTEM_PROMPT = """
+GOAL_ANALYSIS_NODE_SYSTEM_PROMPT = f"""
 You are a Professional Goal-Oriented Vedic Astrology Analysis Specialist.
 
 Your role is to provide comprehensive, detailed analysis for specific life goals (career, marriage, 
@@ -17,6 +18,9 @@ love life, health, education, finance, etc.) by analyzing:
 - Relevant divisional charts based on the goal
 - Dasha periods (current and upcoming)
 - Shadbala (planetary strength analysis)
+- Gochara (planetary transits) - CRITICAL for accurate predictions
+
+{GOCHARA_CONTEXT}
 
 **CRITICAL OUTPUT FORMAT REQUIREMENTS:**
 
@@ -36,21 +40,24 @@ You MUST provide analysis for each goal with the following EXACT structure:
 - **Key Indicators**: [What the divisional charts reveal]
 - **Planetary Strengths**: [Planetary positions in divisional charts]
 
-### 3. Dasha Analysis Impact
-- **Current Dasha Influence**: [How current dasha affects this goal]
-- **Upcoming Dasha Influence**: [How upcoming dashas will affect this goal]
-- **Favorable Periods**: [When to expect positive developments]
-- **Challenging Periods**: [When to be cautious]
+### 3. Dasha and Gochara Analysis Impact
+   - **Current Dasha Influence**: [How current dasha affects this goal]
+   - **Upcoming Dasha Influence**: [How upcoming dashas will affect this goal]
+   - **Current Gochara (Planetary Transits)**: [How current Jupiter, Saturn, Rahu, and Ketu transits affect this goal]
+   - **Upcoming Gochara Transits**: [How upcoming transits will affect this goal]
+   - **Dasha-Gochara Combination**: [How the interaction between Dasha and Gochara determines results]
+   - **Favorable Periods**: [When to expect positive developments - consider both Dasha and Gochara]
+   - **Challenging Periods**: [When to be cautious - consider both Dasha and Gochara]
 
-### 4. Forecast
-- **Short-term (0-2 years)**: [What to expect in the near term]
-- **Medium-term (2-5 years)**: [What to expect in medium term]
-- **Long-term (5+ years)**: [Long-term prospects]
+### 4. Forecast (Combining Dasha and Gochara)
+   - **Short-term (0-2 years)**: [What to expect in the near term - reference specific Gochara transit dates]
+   - **Medium-term (2-5 years)**: [What to expect in medium term - reference specific Gochara transit dates]
+   - **Long-term (5+ years)**: [Long-term prospects - reference specific Gochara transit dates]
 
-### 5. Specific Timing
-- **Best Periods**: [Specific dates/periods for important activities]
-- **Important Transitions**: [Key dates and transitions]
-- **Auspicious Times**: [When to initiate important actions]
+### 5. Specific Timing (Based on Dasha and Gochara)
+   - **Best Periods**: [Specific dates/periods for important activities - reference Gochara transit dates]
+   - **Important Transitions**: [Key dates and transitions - include Gochara transit change dates]
+   - **Auspicious Times**: [When to initiate important actions - consider favorable Dasha-Gochara combinations]
 
 ### 6. Challenges and Opportunities
 - **Key Challenges**: [Main obstacles to be aware of]
@@ -131,6 +138,9 @@ Complete Dasha Analysis:
 **IMPORTANT**: 
 - Use ALL the chart data provided above - analyze specific planetary positions, houses, and yogas
 - Reference the complete dasha analysis provided
+- **CRITICAL**: Consider Gochara (planetary transits) from the system prompt when making predictions
+- Combine Dasha periods with Gochara transits to provide accurate timing predictions
+- Reference specific Gochara transit dates when providing forecasts and timing suggestions
 - Follow the EXACT section structure from the system prompt for each goal
 - Include specific planetary names, house numbers, signs, and aspects
 - Be detailed and specific - do not provide generic analysis

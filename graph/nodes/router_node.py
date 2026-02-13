@@ -60,10 +60,12 @@ async def router_node(state: AstroGuruState) -> Dict[str, Any]:
     user_message = state.get("user_message", "").strip()
     analysis_complete = state.get("analysis_complete", False)
     birth_details = state.get("birth_details")
+    messages = state.get("messages", [])
     
     # CRITICAL RULE 1: If analysis is already complete, always route to chat (never re-analyze)
+    # This ensures follow-up questions after analysis go to chat
     if analysis_complete:
-        logger.info("Router node: Analysis complete, routing to chat")
+        logger.info("Router node: Analysis complete, routing to chat (follow-up questions will have context)")
         return {"request_type": "chat"}
     
     # CRITICAL RULE 2: If birth details exist but analysis not complete, continue analysis workflow
@@ -72,23 +74,65 @@ async def router_node(state: AstroGuruState) -> Dict[str, Any]:
         logger.info("Router node: Birth details exist but analysis incomplete, continuing analysis workflow")
         return {"request_type": "analysis"}
     
+    # CRITICAL RULE 3: If there's existing conversation history, check if user wants new analysis
+    # or is asking a follow-up question
+    if messages and len(messages) > 0:
+        logger.info(f"Router node: Found {len(messages)} messages in conversation history")
+        
+        # First, check if user explicitly wants a NEW analysis (not a follow-up)
+        # This takes priority over follow-up detection
+        new_analysis_keywords = ["new analysis", "start over", "analyze again", "new horoscope", "different chart", "reset"]
+        if any(keyword in user_message.lower() for keyword in new_analysis_keywords):
+            logger.info("Router node: User explicitly requested new analysis, routing to analysis")
+            return {"request_type": "analysis"}
+        
+        # Check if user is requesting analysis (even with conversation history)
+        # This handles cases where user might have chatted first, then decided to get analysis
+        analysis_request_keywords = ["i want my horoscope", "analyze my", "get my horoscope", "i'd like to get my", "birth chart", "natal chart"]
+        if any(keyword in user_message.lower() for keyword in analysis_request_keywords):
+            logger.info("Router node: User requesting analysis (despite conversation history), routing to analysis")
+            return {"request_type": "analysis"}
+        
+        # If there's conversation history and user is asking follow-up questions (not requesting analysis),
+        # route to chat to preserve context
+        logger.info("Router node: Follow-up question detected (conversation history exists, no analysis request), routing to chat")
+        return {"request_type": "chat"}
+    
     # If no user message, default to chat
     if not user_message:
         logger.info("Router node: No user message, routing to chat")
         return {"request_type": "chat"}
     
-    # Use LLM to determine intent
+    # Use LLM to determine intent (only for new conversations without history)
     llm = create_router_llm()
+    
+    # Build context from recent messages if available
+    conversation_context = ""
+    if messages:
+        recent_messages = messages[-4:]  # Last 2 exchanges (4 messages)
+        conversation_context = "\n\nRecent conversation context:\n"
+        for msg in recent_messages:
+            role = msg.get("role", "unknown")
+            content = msg.get("content", "")[:200]  # Truncate long messages
+            conversation_context += f"{role}: {content}\n"
+    
     prompt = f"""Analyze this user message and determine if they want:
 1. "analysis" - They want their horoscope analyzed (provide birth details, get analysis)
    - Keywords: "horoscope", "analyze", "birth chart", "my chart", "get my", "I want my", "I'd like to get"
    - If message contains "I'd like to get my horoscope analyzed" → "analysis"
+   - User provides or wants to provide birth details (date, time, place)
 2. "chat" - They want general conversation or information about astrology
    - General questions like "what is", "explain", "tell me about" (without "my" or personal requests)
+   - Follow-up questions about previous conversation
+   - Questions about astrology concepts
 
-User message: "{user_message}"
+{conversation_context}
 
-**IMPORTANT**: If the user says they want their horoscope analyzed, want analysis, or want to get their chart analyzed, respond with "analysis".
+Current user message: "{user_message}"
+
+**IMPORTANT**: 
+- If the user says they want their horoscope analyzed, want analysis, or want to get their chart analyzed, respond with "analysis".
+- If there's conversation history and the user is asking a follow-up question, respond with "chat".
 
 Respond with ONLY one word: "analysis" or "chat" """
     
@@ -102,15 +146,21 @@ Respond with ONLY one word: "analysis" or "chat" """
         logger.debug(f"Router node: LLM decision: {route_decision}")
         
         # Validate response - be more aggressive about detecting analysis
-        if "analysis" in route_decision or any(keyword in user_message.lower() for keyword in ["analyze", "horoscope", "chart", "get my", "i want my", "i'd like"]):
-            logger.info(f"Router node: Routing to analysis workflow (decision: {route_decision})")
-            return {"request_type": "analysis"}
-        else:
-            logger.info(f"Router node: Routing to normal chat (decision: {route_decision})")
-            return {"request_type": "chat"}
+        # But only if there's no conversation history (to avoid misrouting follow-ups)
+        if not messages:
+            if "analysis" in route_decision or any(keyword in user_message.lower() for keyword in ["analyze", "horoscope", "chart", "get my", "i want my", "i'd like"]):
+                logger.info(f"Router node: Routing to analysis workflow (decision: {route_decision})")
+                return {"request_type": "analysis"}
+        
+        logger.info(f"Router node: Routing to normal chat (decision: {route_decision})")
+        return {"request_type": "chat"}
             
     except Exception as e:
         logger.error(f"Router node: Error determining route: {e}", exc_info=True)
+        # If error and there's conversation history, default to chat to preserve context
+        if messages:
+            logger.info("Router node: Error occurred, but conversation history exists, routing to chat")
+            return {"request_type": "chat"}
         # If error, check for analysis keywords as fallback
         analysis_keywords = ["analyze", "horoscope", "chart", "get my", "i want my", "i'd like"]
         if any(keyword in user_message.lower() for keyword in analysis_keywords):

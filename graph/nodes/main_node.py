@@ -105,7 +105,7 @@ async def main_node(state: AstroGuruState) -> Dict[str, Any]:
     # Build conversation history
     conversation = [SystemMessage(content=MAIN_NODE_SYSTEM_PROMPT)]
     history_count = 0
-    for msg in messages[-10:]:  # Keep last 10 messages for context
+    for msg in messages[-20:]:  # Keep last 20 messages for context (increased for better continuity)
         if msg.get("role") == "user":
             conversation.append(HumanMessage(content=msg.get("content", "")))
             history_count += 1
@@ -113,7 +113,7 @@ async def main_node(state: AstroGuruState) -> Dict[str, Any]:
             conversation.append(AIMessage(content=msg.get("content", "")))
             history_count += 1
     
-    logger.debug(f"Main node: Added {history_count} messages from history")
+    logger.info(f"Main node: Added {history_count} messages from history (total history: {len(messages)} messages)")
     
     # Add current user message
     conversation.append(HumanMessage(content=user_message))

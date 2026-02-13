@@ -7,12 +7,15 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.caches import BaseCache  # Import to resolve Pydantic v2 forward reference
 from config import AstroConfig, logger
 from graph.state import AstroGuruState
+from graph.constants import GOCHARA_CONTEXT
 
 
-SUMMARIZER_NODE_SYSTEM_PROMPT = """
+SUMMARIZER_NODE_SYSTEM_PROMPT = f"""
 You are a Professional Vedic Astrology Report Summarizer.
 
-Your role is to synthesize all the specialized analysis from previous nodes (location, chart, Dasha, goal analysis, and recommendations) into a clear, concise, and user-friendly astrology report that is easy to understand for general users.
+Your role is to synthesize all the specialized analysis from previous nodes (location, chart, Dasha, Gochara transits, goal analysis, and recommendations) into a clear, concise, and user-friendly astrology report that is easy to understand for general users.
+
+{GOCHARA_CONTEXT}
 
 **CRITICAL GUIDELINES:**
 
@@ -66,15 +69,18 @@ Your role is to synthesize all the specialized analysis from previous nodes (loc
 - **Weak Houses**: [Which houses need attention]
 - **Key Yogas**: [Important planetary combinations]
 
-### 3. Your Current Life Period (Dasha)
+### 3. Your Current Life Period (Dasha and Planetary Transits)
 
-[Summarize the dasha analysis in user-friendly language:
+[Summarize the dasha and Gochara (planetary transit) analysis in user-friendly language:
 - What period you're currently in (e.g., "You're in a Mercury period" - explain what this means simply)
 - How long this period lasts and when it started/ends
+- Current planetary transits (Jupiter, Saturn, Rahu, Ketu) and their effects
+- How Dasha and Gochara interact to determine results
 - What to expect during this period (3-5 key points)
-- When the next significant period begins and what it might bring (1-2 sentences)]
+- When the next significant period begins and what it might bring (1-2 sentences)
+- Important transit dates to watch (when planets change signs)]
 
-**Include**: Specific dates for period changes, key months/years to watch, general themes.
+**Include**: Specific dates for period changes, Gochara transit dates, key months/years to watch, general themes.
 
 **Avoid**: Complex dasha calculations, all upcoming periods in detail, technical terminology.
 
@@ -84,9 +90,14 @@ Your role is to synthesize all the specialized analysis from previous nodes (loc
 
 [For EACH goal, provide a concise summary:
 - What your chart says about this area of life (3-5 sentences)
-- Best times to take action (specific months/years if available)
-- Key challenges and opportunities (bullet points)
-- What to focus on (3-5 actionable points)]
+- Forecast (considering both Dasha and Gochara transits):
+  - Short-term (0-2 years): [What to expect in the near term - reference specific Dasha/Gochara transit periods]
+  - Medium-term (2-5 years): [What to expect in medium term - reference specific Dasha/Gochara transit periods]
+  - Long-term (5+ years): [Long-term prospects - reference specific Dasha/Gochara transit periods]
+- Best times to take action (specific months/years based on favorable Dasha-Gochara combinations)
+- Key challenges and opportunities (bullet points - consider Gochara transit effects)
+- What to focus on (3-5 actionable points)
+- Important transit dates to watch for this goal]
 
 **Format**: Use subheadings for each goal (e.g., "### Career", "### Relationships")
 
@@ -207,12 +218,14 @@ Analysis Data Available:
 **CRITICAL INSTRUCTIONS**:
 - Follow the section structure from the system prompt
 - **SUMMARIZE** the analysis - extract key insights, important dates, and actionable recommendations
+- **CRITICAL**: Include Gochara (planetary transit) information from the system prompt when summarizing current periods and forecasts
+- Reference specific Gochara transit dates when mentioning timing and forecasts
 - Use simple, everyday language - avoid excessive astrology jargon
 - When technical terms are necessary, explain them briefly
 - Focus on what matters most: specific dates, actionable advice, key insights
 - Keep it concise but comprehensive (aim for 800-1200 words total)
 - Make it personal and warm - use "you" and "your"
-- Include specific dates and time periods when available
+- Include specific dates and time periods when available (reference Gochara transit dates)
 - Prioritize practical value over technical detail
 - Use proper markdown formatting with ##, ###, and bullet points
 - Do NOT use placeholders - use actual values from birth details

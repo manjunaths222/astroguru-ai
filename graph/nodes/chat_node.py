@@ -18,6 +18,9 @@ You are a Professional Vedic Astrology Consultant helping users with astrology q
    - Use this context to answer questions about the user's specific horoscope
    - Provide specific details from the analysis when relevant
    - If asked to re-analyze or start over, explain that a new analysis would need to be initiated
+   - **CRITICAL**: You have access to the full conversation history - use it to understand context
+   - When answering follow-up questions, refer back to previous parts of the conversation
+   - Maintain continuity with previous responses
 
 2. **General Chat Mode (no analysis yet):**
    - Answer general questions about Vedic astrology
@@ -25,12 +28,16 @@ You are a Professional Vedic Astrology Consultant helping users with astrology q
    - Provide educational information about astrology
    - If user wants their horoscope analyzed, guide them to provide birth details
    - Be friendly, professional, and helpful
+   - **CRITICAL**: You have access to the full conversation history - use it to understand context
+   - When answering follow-up questions, refer back to previous parts of the conversation
 
 **Important Guidelines:**
 - Be friendly, professional, and helpful
 - Use clear, accessible language
 - Provide accurate information about Vedic astrology
 - If you don't know something, admit it rather than making it up
+- **Always consider the conversation history** - follow-up questions should be answered in context
+- Maintain continuity and coherence across the conversation
 """
 
 
@@ -79,9 +86,10 @@ You are in general chat mode. Answer questions about Vedic astrology in general.
     # Build conversation - SystemMessage must be first (position 0) for Gemini
     conversation = [SystemMessage(content=system_content)]
     
-    # Add conversation history (last 10 messages)
+    # Add conversation history (last 20 messages to preserve more context for follow-ups)
+    # This ensures follow-up questions have sufficient context
     history_count = 0
-    for msg in messages[-10:]:
+    for msg in messages[-20:]:  # Increased from 10 to 20 for better context
         if msg.get("role") == "user":
             conversation.append(HumanMessage(content=msg.get("content", "")))
             history_count += 1
@@ -89,7 +97,7 @@ You are in general chat mode. Answer questions about Vedic astrology in general.
             conversation.append(AIMessage(content=msg.get("content", "")))
             history_count += 1
     
-    logger.debug(f"Chat node: Added {history_count} messages from history")
+    logger.info(f"Chat node: Added {history_count} messages from history (total history: {len(messages)} messages)")
     
     # Add current user message
     conversation.append(HumanMessage(content=user_message))
@@ -113,9 +121,10 @@ You are in general chat mode. Answer questions about Vedic astrology in general.
     
     logger.info(f"Chat node: Response generated successfully, total messages: {len(new_messages)}")
     
+    # Default: clear user_message after processing to prevent infinite loops
     result = {
         "messages": new_messages,
-        "user_message": ""  # Always clear user_message after processing in chat
+        "user_message": ""  # Always clear user_message after processing in chat (prevents loops)
     }
     
     # Check if user wants to start analysis (they might ask after chatting)
@@ -127,9 +136,21 @@ You are in general chat mode. Answer questions about Vedic astrology in general.
         
         if wants_analysis:
             # Set request_type to trigger analysis, but keep user_message for main node
+            # This is the ONLY case where we keep user_message - to pass it to main_node
             result["request_type"] = "analysis"
             result["user_message"] = user_message  # Keep message for main node to process
-            logger.info("Chat node: User wants analysis, setting request_type to 'analysis' and keeping user_message")
+            logger.info("Chat node: User wants analysis, setting request_type to 'analysis' and keeping user_message for main node")
+        else:
+            # Ensure user_message is cleared (defensive programming)
+            result["user_message"] = ""
+    else:
+        # Analysis already complete - always clear user_message to prevent loops
+        result["user_message"] = ""
+    
+    # CRITICAL: Always ensure user_message is cleared unless explicitly passing to analysis
+    # This prevents infinite loops in the chat node
+    if "request_type" not in result or result.get("request_type") != "analysis":
+        result["user_message"] = ""
     
     return result
 
