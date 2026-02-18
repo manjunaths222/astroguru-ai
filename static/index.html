@@ -9,16 +9,130 @@
 </head>
 <body>
     <div class="container">
-        <header>
+        <!-- Navigation Bar -->
+        <nav class="navbar" id="navbar" style="display: none;">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <h1>✨ AstroGuru AI</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="#" onclick="showDashboard(); return false;" id="dashboardLink">Dashboard</a>
+                    <a href="#" onclick="showForm(); return false;" id="newAnalysisLink">New Analysis</a>
+                    <div class="user-menu" id="userMenu">
+                        <span id="userName">User</span>
+                        <button class="btn-link" onclick="authManager.logout()">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <header id="header">
             <h1>✨ AstroGuru AI</h1>
             <p class="subtitle">Your Personal Vedic Astrology Guide</p>
         </header>
 
         <div class="main-content">
+            <!-- Welcome Page -->
+            <div class="welcome-page" id="welcomePage" style="display: none;">
+                <div class="welcome-content">
+                    <h2>Welcome to Vedic Astrology</h2>
+                    <div class="welcome-text">
+                        <p>Vedic Astrology, also known as Jyotish, is an ancient Indian system of astrology that has been practiced for thousands of years. It offers profound insights into your life's journey, personality, relationships, career, and spiritual growth.</p>
+                        <p>Our AI-powered analysis combines traditional Vedic principles with modern technology to provide you with:</p>
+                        <ul>
+                            <li><strong>Birth Chart Analysis:</strong> Understanding your planetary positions and their influence</li>
+                            <li><strong>Dasha Periods:</strong> Insights into your current life phase and upcoming transitions</li>
+                            <li><strong>Goal-Specific Guidance:</strong> Personalized advice for career, relationships, health, and more</li>
+                            <li><strong>Remedies & Recommendations:</strong> Practical steps to enhance positive energies</li>
+                        </ul>
+                        <p>Get started by filling out your birth details below. Our AI will analyze your chart and provide comprehensive insights tailored to your unique astrological profile.</p>
+                    </div>
+                    <button class="btn-primary btn-large" onclick="showForm()">
+                        Start Your Analysis
+                    </button>
+                </div>
+            </div>
+
+            <!-- Auth Required -->
+            <div class="auth-required" id="authRequired" style="display: none;">
+                <div class="auth-required-content">
+                    <h2>Welcome to AstroGuru AI</h2>
+                    <p>Please login to continue</p>
+                    <button class="btn-primary" onclick="authManager.initiateGoogleLogin()">
+                        <span>🔐 Login with Google</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard -->
+            <div class="dashboard-container" id="dashboardContainer" style="display: none;">
+                <div class="dashboard-header">
+                    <h2>My Dashboard</h2>
+                </div>
+                <div class="dashboard-content">
+                    <div class="user-profile" id="userProfile">
+                        <div class="profile-info">
+                            <img id="userPicture" src="" alt="Profile" class="profile-picture" style="display: none;">
+                            <div>
+                                <h3 id="profileName">User</h3>
+                                <p id="profileEmail">email@example.com</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabbed Interface -->
+                    <div class="dashboard-tabs">
+                        <div class="tab-buttons">
+                            <button class="tab-button active" id="chatQueriesTab" onclick="switchTab('chatQueries')">
+                                <span>💬 Chat Queries</span>
+                            </button>
+                            <button class="tab-button" id="fullReportsTab" onclick="switchTab('fullReports')">
+                                <span>📊 Full Reports</span>
+                            </button>
+                        </div>
+                        
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="chatQueriesPane">
+                                <div class="orders-section">
+                                    <h3>Chat Queries</h3>
+                                    <div id="chatQueriesList" class="orders-list">
+                                        <div class="loading">Loading chat queries...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-pane" id="fullReportsPane">
+                                <div class="orders-section">
+                                    <h3>Full Reports</h3>
+                                    <div id="fullReportsList" class="orders-list">
+                                        <div class="loading">Loading full reports...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Input Form -->
-            <div class="form-container" id="formContainer">
+            <div class="form-container" id="formContainer" style="display: none;">
                 <h2>Enter Your Birth Details</h2>
                 <form id="birthForm">
+                    <div class="form-group">
+                        <label for="orderType">Order Type *</label>
+                        <select id="orderType" name="orderType" required onchange="handleOrderTypeChange()">
+                            <option value="full_report">Full Report</option>
+                            <option value="query">Query (Ask a Question)</option>
+                        </select>
+                        <small id="orderTypeHelp" class="help-text">Full Report provides comprehensive analysis. Query allows you to ask specific questions.</small>
+                    </div>
+
+                    <div class="form-group" id="queryGroup" style="display: none;">
+                        <label for="userQuery">Your Question *</label>
+                        <textarea id="userQuery" name="userQuery" rows="3" placeholder="Enter your astrology question here..."></textarea>
+                        <small class="help-text">Ask a specific question about your horoscope, career, relationships, health, etc.</small>
+                    </div>
+
                     <div class="form-group">
                         <label for="name">Full Name *</label>
                         <input type="text" id="name" name="name" required placeholder="Enter your full name">
@@ -60,46 +174,69 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="sendEmailCheckbox" class="checkbox-label">
-                            <input type="checkbox" id="sendEmailCheckbox" name="sendEmail">
-                            <span>📧 Send report to my email (Recommended: Reporting takes around 3-5 minutes)</span>
-                        </label>
-                        <small>Get your analysis delivered to your inbox when ready</small>
-                    </div>
-
-                    <div class="form-group" id="emailInputGroup" style="display: none;">
-                        <label for="email">Email Address *</label>
-                        <input type="email" id="email" name="email" required placeholder="your.email@example.com">
-                        <small>We'll send your complete astrology report to this email</small>
-                    </div>
-
                     <button type="submit" class="btn-primary" id="submitBtn">
-                        <span class="btn-text">Get My Astrology Report</span>
-                        <span class="btn-loader" style="display: none;">⏳ Analyzing...</span>
+                        <span class="btn-text" id="submitBtnText">Pay and Generate</span>
+                        <span class="btn-loader" style="display: none;">Processing...</span>
                     </button>
+                    <div id="priceDisplay" class="price-display" style="margin-top: 16px; text-align: center; font-weight: 600; color: var(--primary-color);">
+                        Price: ₹<span id="priceAmount">10.00</span>
+                    </div>
                 </form>
             </div>
 
-            <!-- Results Container -->
+            <!-- Chat Interface -->
+            <div class="chat-container" id="chatContainer" style="display: none;">
+                <div class="chat-header">
+                    <h2>Chat</h2>
+                    <button class="btn-secondary" onclick="showDashboard()">Back to Dashboard</button>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="loading">Loading chat history...</div>
+                </div>
+                <div class="chat-input-container" id="chatInputContainer">
+                    <div class="message-limit-info" id="messageLimitInfo"></div>
+                    <div class="chat-input-wrapper">
+                        <textarea id="chatInput" placeholder="Type your message..." rows="2"></textarea>
+                        <button class="btn-primary" id="sendChatBtn" onclick="sendChatMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Success Page -->
+            <div class="payment-success" id="paymentSuccess" style="display: none;">
+                <div class="success-content">
+                    <div class="success-icon">✅</div>
+                    <h2>Payment Successful!</h2>
+                    <p>Your payment has been processed successfully. Your astrology report will be emailed to you once the analysis is complete.</p>
+                    <p class="info-text">This usually takes 3-5 minutes. You can also check your dashboard for updates.</p>
+                    <div class="success-actions">
+                        <button class="btn-primary" onclick="showDashboard()">Go to Dashboard</button>
+                        <button class="btn-secondary" onclick="showForm()">New Analysis</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Failure Page -->
+            <div class="payment-failure" id="paymentFailure" style="display: none;">
+                <div class="failure-content">
+                    <div class="failure-icon">❌</div>
+                    <h2>Payment Failed</h2>
+                    <p id="paymentErrorMsg">Your payment could not be processed. Please try again.</p>
+                    <div class="failure-actions">
+                        <button class="btn-primary" onclick="retryPayment()">Retry Payment</button>
+                        <button class="btn-secondary" onclick="showDashboard()">Go to Dashboard</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Container (for viewing completed analysis) -->
             <div class="results-container" id="resultsContainer" style="display: none;">
                 <div class="results-header">
                     <h2>Your Astrology Report</h2>
-                    <button class="btn-secondary" id="newAnalysisBtn">New Analysis</button>
+                    <button class="btn-secondary" onclick="showDashboard()">Back to Dashboard</button>
                 </div>
 
-                <div class="loading" id="loading" style="display: none;">
-                    <div class="spinner"></div>
-                    <p>Analyzing your birth chart... This may around 3-5 minutes.</p>
-                </div>
-
-                <div class="error-message" id="errorMessage" style="display: none;"></div>
-
-                <div class="chat-container" id="chatContainer">
-                    <div class="messages" id="messages"></div>
-                </div>
-
-                <div class="analysis-sections" id="analysisSections" style="display: none;">
+                <div class="analysis-sections" id="analysisSections">
                     <div class="section" id="summarySection" style="display: none;">
                         <h3>📋 Your Astrology Report</h3>
                         <div class="section-content" id="summaryContent"></div>
@@ -134,18 +271,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Chat Interface (shown after analysis) -->
-                <div class="chat-interface" id="chatInterface" style="display: none;">
-                    <h3>💬 Ask Questions About Your Report</h3>
-                    <div class="chat-messages-container" id="chatMessagesContainer">
-                        <div class="messages" id="chatMessages"></div>
-                    </div>
-                    <div class="chat-input-container">
-                        <input type="text" id="chatInput" placeholder="Ask a question about your astrology report..." class="chat-input">
-                        <button id="sendChatBtn" class="btn-primary">Send</button>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -154,7 +279,18 @@
         </footer>
     </div>
 
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner"></div>
+        <p id="loadingText">Loading...</p>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <script src="/static/auth.js"></script>
     <script src="/static/app.js"></script>
+    <script src="/static/dashboard.js"></script>
+    <script src="/static/chat.js"></script>
 </body>
 </html>
-

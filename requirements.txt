@@ -28,6 +28,22 @@ pytz==2024.1  # Timezone support for birth time calculations
 # timezonefinder==6.2.0  # Optional: Accurate timezone lookup from coordinates (requires h3 which needs build tools)
 # Note: timezonefinder is optional - the code has a fallback mechanism if it's not installed
 
+# Database
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9  # Synchronous PostgreSQL driver
+alembic==1.13.1
+
+# Authentication
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+
+# Payment
+razorpay==1.4.2
+
+# Scheduling
+apscheduler==3.10.4
+
 # Testing
 pytest>=8.2.0,<9.0.0  # Compatible with pytest-asyncio 0.24.0
 pytest-asyncio==0.24.0

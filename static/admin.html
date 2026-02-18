@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - AstroGuru AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 Admin Panel</h1>
+            <p class="subtitle">AstroGuru AI - Order Management</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Admin Login -->
+            <div class="admin-login" id="adminLogin">
+                <div class="login-form">
+                    <h2>Admin Login</h2>
+                    <form id="adminLoginForm">
+                        <div class="form-group">
+                            <label for="adminEmail">Email</label>
+                            <input type="email" id="adminEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPassword">Password</label>
+                            <input type="password" id="adminPassword" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Login</button>
+                        <div id="adminLoginError" class="error-message" style="display: none;"></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div class="admin-dashboard" id="adminDashboard" style="display: none;">
+                <div class="admin-header">
+                    <h2>Order Management</h2>
+                    <button class="btn-secondary" onclick="authManager.logout()">Logout</button>
+                </div>
+
+                <!-- Stats -->
+                <div class="admin-stats" id="adminStats">
+                    <div class="stat-card">
+                        <h3>Total Orders</h3>
+                        <p id="statTotalOrders">-</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Revenue</h3>
+                        <p id="statRevenue">₹-</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Completed</h3>
+                        <p id="statCompleted">-</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Processing</h3>
+                        <p id="statProcessing">-</p>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="admin-filters">
+                    <div class="filter-group">
+                        <label for="filterStatus">Status:</label>
+                        <select id="filterStatus">
+                            <option value="">All</option>
+                            <option value="payment_pending">Payment Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="completed">Completed</option>
+                            <option value="failed">Failed</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterUserId">User ID:</label>
+                        <input type="number" id="filterUserId" placeholder="User ID">
+                    </div>
+                    <button class="btn-primary" onclick="loadAdminOrders()">Apply Filters</button>
+                    <button class="btn-secondary" onclick="resetFilters()">Reset</button>
+                </div>
+
+                <!-- Orders Table -->
+                <div class="admin-orders">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>User</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">Loading orders...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Pagination -->
+                    <div class="pagination" id="pagination">
+                        <button class="btn-secondary" id="prevPage" onclick="changePage(-1)">Previous</button>
+                        <span id="pageInfo">Page 1 of 1</span>
+                        <button class="btn-secondary" id="nextPage" onclick="changePage(1)">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Details Modal -->
+            <div class="modal" id="orderModal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close" onclick="closeOrderModal()">&times;</span>
+                    <h2>Order Details</h2>
+                    <div id="orderDetails"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/auth.js"></script>
+    <script src="/static/admin.js"></script>
+</body>
+</html>
+

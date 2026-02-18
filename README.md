@@ -1,33 +1,41 @@
-# AstroGuru AI - LangGraph Version
+# AstroGuru AI - Vedic Astrology Analysis Platform
 
-An AI-powered astrology analysis system using **LangGraph** and **Gemini Models** to provide comprehensive horoscope analysis, chart generation, Dasha reports, and goal-oriented forecasts.
+An AI-powered astrology analysis system using **LangGraph** and **Gemini Models** to provide comprehensive horoscope analysis with authentication, payment integration, and admin management.
 
 ## Features
 
-The system provides comprehensive astrology analysis including:
-
+### Core Astrology Features
 1. **Intelligent Routing**: Automatically determines if user wants analysis or general chat
 2. **Chart Generation**: Generates Lagna and Divisional charts in South Indian style
 3. **Dasha Analysis**: Generates lifetime and on-demand Dasha/Bhukthi reports
-4. **Goal-Oriented Analysis**: Detailed analysis and forecasts for specific goals (career, marriage, love life, etc.)
+4. **Goal-Oriented Analysis**: Detailed analysis for specific goals (career, marriage, love life, etc.)
 5. **Recommendations**: Provides detailed recommendations and remedies based on analysis
-6. **Location Resolution**: Automatically resolves place names to geographic coordinates using geocoding API
-7. **Chat with Context**: After analysis is complete, supports normal chat conversations with full context from the analysis
-8. **Timezone Correction**: Automatically validates and corrects timezone information
-9. **Email Reports**: Optional email delivery of complete astrology reports (users can choose to receive reports via email instead of waiting on screen)
+6. **Location Resolution**: Automatically resolves place names to geographic coordinates
+7. **Email Reports**: Automatic email delivery of complete astrology reports
+
+### Platform Features
+1. **Google OAuth Authentication**: Secure user login with Google
+2. **Payment Integration**: Razorpay payment gateway for UPI, cards, and netbanking
+3. **Order Management**: Complete order lifecycle tracking
+4. **User Dashboard**: View order history and past analysis reports
+5. **Admin Panel**: Comprehensive admin dashboard with order management, filters, and statistics
+6. **Error Handling**: Robust error handling with order status tracking
 
 ## Prerequisites
 
 1. **Python 3.11 or higher**
-2. **Google AI API Key** (for Gemini models)
-   - Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. **PostgreSQL Database** (12 or higher)
+3. **Google AI API Key** (for Gemini models)
+4. **Google OAuth Credentials** (for authentication)
+5. **Razorpay Account** (for payments)
+6. **Resend API Key** (for email delivery)
 
 ## Installation
 
 ### Step 1: Clone/Navigate to the Project
 
 ```bash
-cd /Users/yml/Documents/voltron/astroguru-ai-langgraph
+cd /path/to/astroguru-ai-langgraph-repo/astroguru-ai
 ```
 
 ### Step 2: Create Virtual Environment
@@ -47,50 +55,185 @@ venv\Scripts\activate
 ### Step 3: Install Dependencies
 
 ```bash
-pip install --upgrade pip
+# Upgrade build tools first
+pip install --upgrade pip setuptools wheel
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### Step 4: Configure Environment Variables
+**Note**: The application uses `psycopg2-binary` for PostgreSQL connectivity, which is a pre-compiled binary package that doesn't require build tools.
+
+### Step 4: Set Up PostgreSQL Database
+
+1. **Install PostgreSQL** (if not already installed):
+   ```bash
+   # macOS
+   brew install postgresql
+   brew services start postgresql
+   
+   # Ubuntu/Debian
+   sudo apt-get install postgresql postgresql-contrib
+   ```
+
+2. **Create Database**:
+   
+   **For macOS (Homebrew installation):**
+   ```bash
+   # Connect to PostgreSQL (uses your system username as default)
+   psql postgres
+   # OR if that doesn't work:
+   psql -d postgres
+   
+   # Create database
+   CREATE DATABASE astroguru_db;
+   
+   # Exit
+   \q
+   ```
+   
+   **For Linux/Windows (standard installation):**
+   ```bash
+   # Connect to PostgreSQL
+   psql -U postgres
+   
+   # Create database
+   CREATE DATABASE astroguru_db;
+   
+   # Exit
+   \q
+   ```
+   
+   **Note**: On macOS with Homebrew, PostgreSQL uses your system username (e.g., `yml`) as the default superuser instead of `postgres`. If you get "role postgres does not exist", use `psql postgres` or `psql -d postgres` instead.
+
+3. **Run Migrations**:
+   ```bash
+   # Make sure you're in the project directory
+   cd /path/to/astroguru-ai
+   
+   # Run migrations (creates all tables)
+   alembic upgrade head
+   ```
+   
+   **Note**: Alembic requires `psycopg2-binary` for synchronous database connections. It's included in `requirements.txt` and will be installed automatically. If you get async connection errors, ensure `psycopg2-binary` is installed:
+   ```bash
+   pip install psycopg2-binary
+   ```
+
+### Step 5: Configure Environment Variables
 
 Create a `.env` file in the project root:
 
 ```bash
-# Create .env file
 touch .env
 ```
 
-Add the following to `.env`:
+Add the following configuration (see `.env.example` for template):
 
 ```env
-# Required: Google AI API Key
-GOOGLE_AI_API_KEY=your-google-ai-api-key-here
+# Database Configuration
+# For macOS Homebrew: Use your system username (e.g., yml) instead of postgres
+# For Linux/Windows: Use postgres as shown below
+DATABASE_URL=postgresql://yml@localhost:5432/astroguru_db
+# OR for standard installation:
+# DATABASE_URL=postgresql://postgres:postgres@localhost:5432/astroguru_db
 
-# Optional: Gemini Model Configuration
-GEMINI_MODEL=gemini-2.0-flash-exp
-GEMINI_TEMPERATURE=0.2
-GEMINI_MAX_TOKENS=8192
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+GOOGLE_REDIRECT_URI=http://localhost:8002/api/v1/auth/google/callback
 
-# Optional: Server Configuration
+# Razorpay Configuration
+RAZORPAY_KEY_ID=your_razorpay_key_id_here
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret_here
+RAZORPAY_WEBHOOK_SECRET=your_razorpay_webhook_secret_here
+
+# JWT Configuration
+JWT_SECRET_KEY=your_secret_key_change_in_production_min_32_chars
+JWT_ALGORITHM=HS256
+JWT_EXPIRATION_HOURS=24
+
+# Admin Configuration
+ADMIN_EMAIL=admin@astroguru.ai
+ADMIN_PASSWORD=your_secure_password_hash_here
+
+# Application Settings
 PORT=8002
 DEBUG=false
 ENV=dev
 
-# Optional: Email Configuration (for sending reports via email using Resend)
-RESEND_API_KEY=re_your_api_key_here
-RESEND_FROM_EMAIL=onboarding@resend.dev
+# Analysis Price (in INR)
+ANALYSIS_PRICE=10.00
+
+# Google AI (Gemini) Configuration
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-2.5-flash
+GEMINI_TEMPERATURE=0.2
+GEMINI_MAX_TOKENS=8192
+
+# Email Configuration (Resend)
+RESEND_API_KEY=your_resend_api_key_here
+RESEND_FROM_EMAIL=astroguruai@resend.dev
 RESEND_FROM_NAME=AstroGuru AI
+
+# Frontend URL (for OAuth redirects)
+FRONTEND_URL=http://localhost:8002
 ```
 
-**Important**: 
-- Replace `your-google-ai-api-key-here` with your actual Google AI API key.
-- For email functionality, get your Resend API key from [https://resend.com/api-keys](https://resend.com/api-keys) and verify your domain at [https://resend.com/domains](https://resend.com/domains). The free tier includes 3,000 emails/month.
+### Step 6: Set Up Google OAuth
 
-Alternatively, you can set environment variables directly:
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing one
+3. Enable **Google+ API** (or **Google Identity Services API**)
+4. Go to **Credentials** → **Create Credentials** → **OAuth 2.0 Client ID**
+5. Configure OAuth consent screen
+6. **Add Authorized JavaScript origins**:
+   - **Development**: `http://localhost:8002`
+   - **Production**: `https://your-domain.com` (add this when deploying)
+   
+   **Note**: These are the domains from which your JavaScript can initiate OAuth requests. Include the protocol (http/https) but no trailing slash or path.
 
-```bash
-export GOOGLE_AI_API_KEY="your-google-ai-api-key-here"
-```
+7. **Add Authorized redirect URIs**:
+   - **Development**: `http://localhost:8002/api/v1/auth/google/callback`
+   - **Production**: `https://your-domain.com/api/v1/auth/google/callback` (add this when deploying)
+   
+   **Note**: These are the exact URLs where Google will redirect users after authentication.
+
+8. Copy **Client ID** and **Client Secret** to `.env` file
+
+**Configuration Summary:**
+- **Authorized JavaScript origins**: The domain where your frontend is hosted
+  - Dev: `http://localhost:8002`
+  - Prod: `https://your-domain.com`
+  
+- **Authorized redirect URIs**: The callback endpoint on your backend
+  - Dev: `http://localhost:8002/api/v1/auth/google/callback`
+  - Prod: `https://your-domain.com/api/v1/auth/google/callback`
+
+**Note for Production:**
+- You can use the **same Google Cloud project** for both development and production
+- Simply add **multiple authorized JavaScript origins and redirect URIs** in the OAuth client configuration
+- Alternatively, create **separate OAuth credentials** (same project, different Client IDs) for dev and prod environments
+- Update `GOOGLE_REDIRECT_URI` in production `.env` to your production domain with HTTPS
+- Example production redirect URI: `https://astroguru.ai/api/v1/auth/google/callback`
+
+### Step 7: Set Up Razorpay
+
+1. Sign up at [Razorpay](https://razorpay.com/)
+2. Go to **Settings** → **API Keys**
+3. Generate **Key ID** and **Key Secret** (use test keys for development)
+4. Set up webhook (optional but recommended):
+   - Go to **Settings** → **Webhooks**
+   - Add webhook URL: `https://your-domain.com/api/v1/payments/webhook`
+   - Select events: `payment.captured`
+   - Copy webhook secret to `.env`
+
+### Step 8: Set Up Resend (Email)
+
+1. Sign up at [Resend](https://resend.com/)
+2. Get API key from [API Keys](https://resend.com/api-keys)
+3. Verify domain (or use `onboarding@resend.dev` for testing)
+4. Add API key to `.env`
 
 ## Running the Application
 
@@ -106,390 +249,603 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8002
 
 The `--reload` flag enables auto-reload on code changes (useful for development).
 
-**Access the API:**
+**Access the Application:**
+- **Web Interface**: http://localhost:8002/
 - **API Documentation (Swagger UI)**: http://localhost:8002/docs
 - **Alternative API Docs (ReDoc)**: http://localhost:8002/redoc
+- **Admin Panel**: http://localhost:8002/static/admin.html
 - **Health Check**: http://localhost:8002/health
-- **Root**: http://localhost:8002/
+
+## User Journey
+
+### 1. User Registration/Login
+
+1. User visits the website
+2. Clicks "Login with Google"
+3. Redirected to Google OAuth
+4. After authentication, redirected back with JWT token
+5. User is logged in and sees welcome page
+
+### 2. Order Creation & Payment
+
+1. User clicks "Start Your Analysis" from welcome page
+2. Fills in birth details form:
+   - Full Name
+   - Date of Birth
+   - Time of Birth (IST)
+   - Place of Birth (with autocomplete)
+   - Goals (career, marriage, health, etc.)
+3. Clicks "Pay and Generate"
+4. Order is created with status `payment_pending`
+5. Razorpay payment page opens
+6. User completes payment (UPI/Card/Netbanking)
+7. Payment is verified
+8. Order status changes to `processing`
+9. User sees success page: "Payment successful, report will be emailed once generated"
+
+### 3. Analysis Processing
+
+1. After payment verification, AI analysis is triggered automatically
+2. System processes:
+   - Location resolution
+   - Chart generation
+   - Dasha calculation
+   - Goal analysis
+   - Recommendations
+   - Summary generation
+3. Analysis results are stored in order
+4. Email is sent to user (if email service available)
+5. Order status changes to `completed` or `failed` (if email fails)
+
+### 4. Viewing Reports
+
+1. User can access dashboard to view all orders
+2. Completed orders show "View Report" button
+3. User can view full analysis report with:
+   - Summary
+   - Chart Analysis
+   - Dasha Analysis
+   - Goal Analysis
+   - Recommendations
 
 ## API Endpoints
 
-### Health Check
+### Authentication Endpoints
 
-**Endpoint**: `GET /health`
+#### Initiate Google OAuth
+**Endpoint**: `GET /api/v1/auth/google`
 
-**Description**: Check service health and graph availability
+**Description**: Get Google OAuth URL for authentication
 
 **Response**:
 ```json
 {
-  "status": "healthy",
-  "graph_initialized": true,
-  "version": "2.0.0"
+  "auth_url": "https://accounts.google.com/o/oauth2/v2/auth?..."
 }
 ```
 
-### Chat Endpoint
+#### Google OAuth Callback
+**Endpoint**: `GET /api/v1/auth/google/callback?code={code}`
 
-**Endpoint**: `POST /api/v1/chat`
+**Description**: Handle OAuth callback and create/update user
 
-**Description**: Main endpoint for interacting with the astrology system. Supports both analysis requests and general chat.
+**Response**: Redirects to frontend with token
+
+#### Admin Login
+**Endpoint**: `POST /api/v1/auth/admin/login`
 
 **Request Body**:
 ```json
 {
-  "message": "Hi, I'd like to get my horoscope analyzed",
-  "session_id": "optional-session-id",
-  "email": "user@example.com",
-  "send_email": true
+  "email": "admin@astroguru.ai",
+  "password": "password"
 }
 ```
-
-**Email Fields** (optional):
-- `email`: Email address to send the report to
-- `send_email`: Boolean flag to enable email delivery (default: `false`)
 
 **Response**:
 ```json
 {
-  "response": "Hello! I'm a Vedic Astrology Consultant...",
-  "analysis_complete": false,
-  "summary": null,
-  "session_id": "session-id-here"
+  "access_token": "jwt_token_here",
+  "token_type": "bearer",
+  "user_type": "admin"
 }
 ```
 
-**Example Requests**:
+#### Get Current User
+**Endpoint**: `GET /api/v1/auth/me`
 
-1. **Start Analysis**:
+**Headers**: `Authorization: Bearer {token}`
+
+**Response**:
 ```json
 {
-  "message": "I want my horoscope analyzed",
-  "session_id": "user-123"
+  "id": 1,
+  "email": "user@example.com",
+  "name": "User Name",
+  "picture_url": "https://...",
+  "type": "user"
 }
 ```
 
-2. **General Chat**:
+### Order Endpoints
+
+#### Create Order
+**Endpoint**: `POST /api/v1/orders`
+
+**Headers**: `Authorization: Bearer {token}`
+
+**Request Body**:
 ```json
 {
-  "message": "What is Vedic astrology?",
-  "session_id": "user-123"
+  "birth_details": {
+    "name": "John Doe",
+    "dateOfBirth": "1990-05-15",
+    "timeOfBirth": "14:30",
+    "placeOfBirth": "Mumbai, Maharashtra, India",
+    "latitude": "19.0760",
+    "longitude": "72.8777",
+    "goals": ["career", "marriage"]
+  }
 }
 ```
 
-3. **Follow-up After Analysis**:
+**Response**:
 ```json
 {
-  "message": "What does my chart say about my career?",
-  "session_id": "user-123"
+  "id": 1,
+  "user_id": 1,
+  "status": "payment_pending",
+  "amount": 10.00,
+  "birth_details": {...},
+  "created_at": "2024-01-01T00:00:00Z",
+  "updated_at": "2024-01-01T00:00:00Z"
 }
 ```
 
-## Usage Flow
+#### Get User Orders
+**Endpoint**: `GET /api/v1/orders?limit=50&offset=0`
 
-### 1. Analysis Flow
+**Headers**: `Authorization: Bearer {token}`
 
-1. **Start Conversation**: Send a greeting or request for horoscope analysis
-   ```
-   "Hi, I'd like to get my horoscope analyzed"
-   ```
-
-2. **Provide Birth Details**: The system will ask for:
-   - **Name**: Full name
-   - **Date of Birth**: YYYY-MM-DD format (e.g., "1990-05-15")
-   - **Time of Birth**: HH:MM format, 24-hour (e.g., "14:30")
-   - **Place of Birth**: City, state, country (e.g., "Mumbai, Maharashtra, India")
-   - **Goals** (optional): career, marriage, love life, health, education, finance, etc.
-
-3. **Automatic Processing**: The system will automatically:
-   - Resolve location coordinates using geocoding API
-   - Validate and correct timezone
-   - Generate birth chart using jyotishganit
-   - Calculate Dasha periods
-   - Analyze goals
-   - Generate recommendations
-   - Create comprehensive summary
-
-4. **Email Delivery** (Optional): Users can choose to receive the report via email:
-   - Check the "Send report to my email" checkbox
-   - Enter email address
-   - Report will be sent automatically when analysis completes
-   - Report is also displayed on screen for immediate viewing
-
-5. **Chat with Context**: After analysis is complete, you can ask questions:
-   ```
-   "What does my chart say about my career?"
-   "Tell me about my current Dasha period"
-   "What are the recommendations for my marriage?"
-   ```
-
-### 2. General Chat Flow
-
-The system can also handle general astrology questions without requiring analysis:
-
-```
-"What is Vedic astrology?"
-"Explain planetary positions"
-"Tell me about nakshatras"
+**Response**:
+```json
+[
+  {
+    "id": 1,
+    "user_id": 1,
+    "status": "completed",
+    "amount": 10.00,
+    "birth_details": {...},
+    "analysis_data": {...},
+    "created_at": "2024-01-01T00:00:00Z"
+  }
+]
 ```
 
-The router automatically determines whether to perform analysis or handle general chat.
+#### Get Order by ID
+**Endpoint**: `GET /api/v1/orders/{order_id}`
 
-## Architecture
+**Headers**: `Authorization: Bearer {token}`
 
-The system uses **LangGraph** for workflow orchestration with specialized nodes:
+**Response**: Same as order object above
 
-### Workflow Nodes
+### Payment Endpoints
 
-1. **Router Node**: Entry point that determines if user wants analysis or general chat
-2. **Main Node**: Collects birth details from user conversation
-3. **Location Node**: Resolves geographic coordinates using geocoding API with agent-based validation
-4. **Chart Node**: Generates Vedic astrology charts using jyotishganit
-5. **Dasha Node**: Calculates and analyzes Vimshottari Dasha periods
-6. **Goal Analysis Node**: Analyzes horoscope for specific life goals
-7. **Recommendation Node**: Provides recommendations and remedies
-8. **Summarizer Node**: Combines all analysis into a comprehensive report
-9. **Chat Node**: Handles normal chat with context after analysis
+#### Create Payment
+**Endpoint**: `POST /api/v1/payments/create?order_id={order_id}`
 
-### Workflow Graph
+**Headers**: `Authorization: Bearer {token}`
 
-```
-Router
-  ├─→ Chat (for general questions)
-  └─→ Analysis Flow:
-       Main → Location → Chart → Dasha → Goal Analysis → Recommendation → Summarizer
-                                                                    ↓
-                                                              Chat (with context)
+**Response**:
+```json
+{
+  "order_id": 1,
+  "razorpay_order_id": "order_xxx",
+  "amount": 10.00,
+  "key_id": "rzp_test_xxx",
+  "currency": "INR"
+}
 ```
 
-### State Management
+#### Verify Payment
+**Endpoint**: `POST /api/v1/payments/verify`
 
-The system uses `AstroGuruState` (TypedDict) to manage conversation state:
-- User messages and conversation history
-- Birth details and location data
-- Chart, Dasha, and analysis data
-- Summary and analysis context
-- Request type (chat/analysis)
+**Headers**: `Authorization: Bearer {token}`
 
-### Key Features
+**Request Body**:
+```json
+{
+  "razorpay_order_id": "order_xxx",
+  "razorpay_payment_id": "pay_xxx",
+  "razorpay_signature": "signature_xxx"
+}
+```
 
-- **Optimized Chart Calculation**: Chart is calculated once and reused across all operations
-- **Agent-Based Location Resolution**: Uses LLM agent with geocoding tools for accurate location resolution
-- **Timezone Validation**: Automatically validates and corrects timezone information
-- **In-Memory Sessions**: Simple session management without persistence
-- **Intelligent Routing**: Automatically routes between chat and analysis based on user intent
+**Response**:
+```json
+{
+  "status": "success",
+  "message": "Payment verified and analysis started"
+}
+```
 
-## Configuration
+#### Payment Webhook
+**Endpoint**: `POST /api/v1/payments/webhook`
 
-### Required Environment Variables
+**Description**: Handle Razorpay webhook events (payment.captured)
 
-- `GOOGLE_AI_API_KEY`: Google AI API key for Gemini models (required)
+**Note**: Webhook signature verification is recommended in production
 
-### Optional Environment Variables
+### Admin Endpoints
 
-- `GEMINI_MODEL`: Gemini model to use (default: `"gemini-2.0-flash-exp"`)
-- `GEMINI_TEMPERATURE`: Temperature for model (default: `0.2`)
-- `GEMINI_MAX_TOKENS`: Maximum tokens (default: `8192`)
-- `PORT`: Server port (default: `8002`)
-- `DEBUG`: Enable debug mode (default: `false`)
-- `ENV`: Environment name (default: `dev`)
+#### Get All Orders (Admin)
+**Endpoint**: `GET /api/v1/admin/orders?status={status}&user_id={user_id}&limit=50&offset=0`
 
-### Email Configuration (Optional)
+**Headers**: `Authorization: Bearer {admin_token}`
 
-To enable email delivery of reports, configure Resend settings:
+**Response**:
+```json
+{
+  "orders": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "user_email": "user@example.com",
+      "status": "completed",
+      "amount": 10.00,
+      "error_reason": null,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  ],
+  "total": 100,
+  "limit": 50,
+  "offset": 0
+}
+```
 
-- `RESEND_API_KEY`: Your Resend API key (required for email functionality)
-- `RESEND_FROM_EMAIL`: From email address (must be a verified domain in Resend)
-- `RESEND_FROM_NAME`: From name (default: `"AstroGuru AI"`)
+#### Get Order Details (Admin)
+**Endpoint**: `GET /api/v1/admin/orders/{order_id}`
 
-**Resend Setup**:
-1. Sign up at [https://resend.com](https://resend.com)
-2. Get your API key from [https://resend.com/api-keys](https://resend.com/api-keys)
-3. Verify your domain at [https://resend.com/domains](https://resend.com/domains)
-   - For testing, you can use `onboarding@resend.dev` (Resend's test domain)
-   - For production, verify your own domain
-4. Set `RESEND_API_KEY` in your `.env` file
+**Headers**: `Authorization: Bearer {admin_token}`
 
-**Resend Free Tier**:
-- 3,000 emails/month
-- 100 emails/day
-- Perfect for development and small-scale production
+**Response**: Complete order details with user, payment, and analysis data
 
-**Benefits of Resend**:
-- Simple API (no SMTP configuration needed)
-- Better deliverability
-- Email tracking and analytics
-- Webhook support for delivery events
+#### Get Admin Statistics
+**Endpoint**: `GET /api/v1/admin/stats`
 
-## Deployment
+**Headers**: `Authorization: Bearer {admin_token}`
 
-The application is configured for deployment on **Render.com** using Docker.
+**Response**:
+```json
+{
+  "total_orders": 100,
+  "orders_by_status": {
+    "payment_pending": 5,
+    "processing": 10,
+    "completed": 80,
+    "failed": 5
+  },
+  "total_revenue": 1000.00
+}
+```
 
-### Quick Deploy to Render.com
+## Admin Panel
 
-1. **Push code to GitHub** (or GitLab/Bitbucket)
+### Accessing Admin Panel
 
-2. **Create new Web Service on Render**:
-   - Connect your repository
-   - Select "Docker" as the runtime
-   - Set build command: (leave empty, uses Dockerfile)
-   - Set start command: (leave empty, uses Dockerfile CMD)
+**For React App (Recommended)**:
+1. Navigate to `http://localhost:3000/admin` (React dev server)
+   - Or `http://localhost:8002/admin` if using production build
 
-3. **Set Environment Variables**:
-   - `GOOGLE_AI_API_KEY`: Your Google AI API key
-   - `PORT`: 8002 (or let Render set it automatically)
-   - `GEMINI_MODEL`: gemini-2.0-flash-exp (optional)
-   - `GEMINI_TEMPERATURE`: 0.2 (optional)
-   - `GEMINI_MAX_TOKENS`: 8192 (optional)
-   - `RESEND_API_KEY`, `RESEND_FROM_EMAIL`: For email functionality (optional)
+**For Legacy Static Files**:
+1. Navigate to `http://localhost:8002/static/admin.html`
 
-4. **Deploy**: Render will automatically build and deploy your application
+**Login**:
+2. Enter admin credentials from your `.env` file:
+   - **Email**: Value of `ADMIN_EMAIL` (default: `admin@astroguru.ai`)
+   - **Password**: The original password (not the hash - system hashes it for comparison)
+   
+3. **Note**: If you need to generate a password hash, see `ADMIN_ACCESS.md` for instructions.
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
+**Access dashboard with**:
+   - Order statistics
+   - Order listing with filters
+   - Order details view
+   - Pagination support
+
+### Admin Features
+
+- **Statistics Dashboard**: Total orders, revenue, status breakdown
+- **Order Management**: View all orders with pagination
+- **Filters**: Filter by status, user ID
+- **Order Details**: View complete order information including:
+  - User details
+  - Payment information
+  - Birth details
+  - Analysis data
+  - Error reasons (if failed)
+
+## Database Schema
+
+### Users Table
+- `id`: Primary key
+- `email`: Unique email address
+- `name`: User's full name
+- `google_id`: Google OAuth ID
+- `picture_url`: Profile picture URL
+- `created_at`, `updated_at`: Timestamps
+
+### Orders Table
+- `id`: Primary key
+- `user_id`: Foreign key to users
+- `status`: payment_pending | processing | completed | failed
+- `payment_id`: Foreign key to payments
+- `amount`: Order amount
+- `birth_details`: JSON field with birth information
+- `analysis_data`: JSON field with analysis results
+- `error_reason`: Text field for error messages
+- `created_at`, `updated_at`: Timestamps
+
+### Payments Table
+- `id`: Primary key
+- `order_id`: Foreign key to orders
+- `razorpay_order_id`: Razorpay order ID
+- `razorpay_payment_id`: Razorpay payment ID
+- `amount`: Payment amount
+- `status`: pending | success | failed
+- `payment_method`: UPI, card, netbanking, etc.
+- `created_at`, `updated_at`: Timestamps
+
+## Order Status Flow
+
+```
+payment_pending → (after payment) → processing → (after analysis) → completed
+                                                      ↓
+                                                   (if email fails)
+                                                      ↓
+                                                   failed
+```
+
+## Error Handling
+
+### Email Failures
+- If email sending fails, order status is set to `failed`
+- Error reason is stored in `error_reason` field
+- Admin can view failed orders and retry if needed
+
+### Payment Failures
+- Payment failures are logged
+- User can retry payment from dashboard
+- Order remains in `payment_pending` status
+
+### Analysis Failures
+- Analysis errors are caught and logged
+- Order status set to `failed` with error reason
+- Admin can investigate and retry
 
 ## Testing
 
-### Test the API with curl
+### Test Authentication
 
 ```bash
-# Health check
-curl http://localhost:8002/health
+# Get OAuth URL
+curl http://localhost:8002/api/v1/auth/google
 
-# Start a chat
-curl -X POST http://localhost:8002/api/v1/chat \
+# Admin login
+curl -X POST http://localhost:8002/api/v1/auth/admin/login \
   -H "Content-Type: application/json" \
   -d '{
-    "message": "Hi, I want my horoscope analyzed",
-    "session_id": "test-123"
+    "email": "admin@astroguru.ai",
+    "password": "password"
   }'
 ```
 
-### Test with Python
+### Test Order Creation
 
-```python
-import requests
-
-# Health check
-response = requests.get("http://localhost:8002/health")
-print(response.json())
-
-# Chat
-response = requests.post(
-    "http://localhost:8002/api/v1/chat",
-    json={
-        "message": "Hi, I want my horoscope analyzed",
-        "session_id": "test-123"
+```bash
+# Create order (requires auth token)
+curl -X POST http://localhost:8002/api/v1/orders \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {token}" \
+  -d '{
+    "birth_details": {
+      "name": "Test User",
+      "dateOfBirth": "1990-01-01",
+      "timeOfBirth": "12:00",
+      "placeOfBirth": "Mumbai, India",
+      "goals": ["career"]
     }
-)
-print(response.json())
+  }'
 ```
+
+### Test Payment
+
+```bash
+# Create payment
+curl -X POST "http://localhost:8002/api/v1/payments/create?order_id=1" \
+  -H "Authorization: Bearer {token}"
+
+# Verify payment (after Razorpay callback)
+curl -X POST http://localhost:8002/api/v1/payments/verify \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {token}" \
+  -d '{
+    "razorpay_order_id": "order_xxx",
+    "razorpay_payment_id": "pay_xxx",
+    "razorpay_signature": "signature_xxx"
+  }'
+```
+
+### Test Payment Webhook (Local Testing)
+
+Since webhooks are called by external services, you can simulate Razorpay webhook calls locally:
+
+```bash
+# Replace {razorpay_order_id} with actual order ID from your database
+# Replace {razorpay_payment_id} with a test payment ID (e.g., "pay_test123")
+
+curl -X POST http://localhost:8002/api/v1/payments/webhook \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event": "payment.captured",
+    "payload": {
+      "payment": {
+        "entity": {
+          "id": "pay_test123",
+          "order_id": "order_ABC123XYZ",
+          "method": "upi",
+          "amount": 1000,
+          "currency": "INR",
+          "status": "captured"
+        }
+      }
+    },
+    "razorpay_signature": "test_signature"
+  }'
+```
+
+**Note**: 
+- Replace `order_ABC123XYZ` with an actual `razorpay_order_id` from your `payments` table
+- The webhook will update the payment status and trigger order processing
+- For local testing, signature verification is skipped if `RAZORPAY_WEBHOOK_SECRET` is not set
+- To get the actual `razorpay_order_id`, check your database:
+  ```sql
+  SELECT razorpay_order_id FROM payments WHERE order_id = 1;
+  ```
 
 ## Troubleshooting
 
-### 1. Graph Not Initialized
+### Database Connection Issues
 
-**Error**: `Graph not initialized` or `GOOGLE_AI_API_KEY not configured`
-
-**Solution**:
-- Verify `GOOGLE_AI_API_KEY` is set in `.env` file or environment variables
-- Check the key is valid and has proper permissions
-- Restart the server after setting the key
-
-### 2. Chart Generation Fails
-
-**Error**: Chart calculation errors or missing data
+**Error**: `Database not initialized` or connection errors
 
 **Solution**:
-- Verify birth details are complete and valid
-- Check date format is YYYY-MM-DD
-- Check time format is HH:MM (24-hour)
-- Ensure jyotishganit is installed correctly: `pip install jyotishganit`
+- Verify PostgreSQL is running: `pg_isready`
+- Check `DATABASE_URL` in `.env` is correct
+- Ensure database exists: `psql -U postgres -l` (Linux) or `psql -l` (macOS)
+- Run migrations: `alembic upgrade head`
 
-### 3. Location Resolution Fails
-
-**Error**: `Failed to resolve location` or geocoding errors
+**Error**: `role "postgres" does not exist` (macOS)
 
 **Solution**:
-- Ensure place name is specific (include city, state, country)
-- Check internet connection (geocoding uses external API)
-- Verify geocoding API is accessible (Nominatim/OpenStreetMap)
-
-### 4. Timezone Issues
-
-**Error**: Invalid timezone or timezone not found
-
-**Solution**:
-- The system automatically corrects timezone from coordinates
-- The code has a built-in fallback timezone lookup (doesn't require timezonefinder)
-- Optional: Install `timezonefinder` for more accurate timezone detection: `pip install timezonefinder` (requires build tools for h3 dependency)
-- Check coordinates are valid
-
-### 5. Import Errors
-
-**Error**: `ModuleNotFoundError` or import errors
-
-**Solution**:
-- Ensure virtual environment is activated
-- Reinstall dependencies: `pip install -r requirements.txt`
-- Check Python version: `python --version` (should be 3.11+)
-
-### 6. Port Already in Use
-
-**Error**: `Address already in use` on port 8002
-
-**Solution**:
-- Change port in `.env`: `PORT=8003`
-- Or kill the process using the port:
-  ```bash
-  # Find process
-  lsof -i :8002
-  # Kill process
-  kill -9 <PID>
+- On macOS with Homebrew, PostgreSQL uses your system username as the default superuser
+- Connect using: `psql postgres` or `psql -d postgres` (without `-U postgres`)
+- Update `DATABASE_URL` in `.env` to use your username instead of `postgres`:
+  ```env
+  DATABASE_URL=postgresql://yml@localhost:5432/astroguru_db
+  ```
+- If you need to create a `postgres` user:
+  ```sql
+  CREATE USER postgres WITH SUPERUSER PASSWORD 'postgres';
   ```
 
-## Differences from ADK Version
+### OAuth Issues
 
-1. **Framework**: Uses LangGraph instead of Google ADK
-2. **Models**: Uses Gemini API directly via `langchain-google-genai`
-3. **Workflow**: Explicit graph-based workflow instead of SequentialAgent
-4. **Chat Support**: Built-in chat node for post-analysis conversations
-5. **State Management**: Explicit state management with TypedDict
-6. **Location Resolution**: Uses geocoding API with agent-based validation
-7. **No Persistence**: Simple API without database (as requested)
-8. **Intelligent Routing**: Router node automatically determines user intent
+**Error**: OAuth callback fails or redirects incorrectly
+
+**Solution**:
+- Verify `GOOGLE_REDIRECT_URI` matches Google Cloud Console settings
+- Check `FRONTEND_URL` is set correctly
+- Ensure OAuth consent screen is configured
+- Check client ID and secret are correct
+
+### Payment Issues
+
+**Error**: Payment creation fails or verification fails
+
+**Solution**:
+- Verify Razorpay keys are correct (test keys for development)
+- Check webhook secret is set (optional but recommended)
+- Ensure payment amount is in paise (amount * 100)
+- Check Razorpay dashboard for payment status
+
+### Email Issues
+
+**Error**: Emails not sending or order marked as failed
+
+**Solution**:
+- Verify `RESEND_API_KEY` is set
+- Check domain is verified in Resend
+- Check email service logs
+- Failed orders can be retried by admin
+
+## Deployment
+
+### Production Checklist
+
+1. **Environment Variables**:
+   - Use production database URL
+   - Set strong `JWT_SECRET_KEY`
+   - Use production Razorpay keys
+   - Set production `FRONTEND_URL` (e.g., `https://astroguru.ai`)
+   - Update `GOOGLE_REDIRECT_URI` to production URL (e.g., `https://astroguru.ai/api/v1/auth/google/callback`)
+   - Add production redirect URI in Google Cloud Console OAuth credentials
+   - Hash admin password properly
+
+2. **Database**:
+   - Run migrations: `alembic upgrade head`
+   - Set up database backups
+   - Configure connection pooling
+
+3. **Security**:
+   - Enable HTTPS
+   - Set secure CORS origins in `.env`:
+     ```env
+     CORS_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+     CORS_ALLOW_CREDENTIALS=true
+     ```
+     **Important**: Never use `CORS_ORIGINS=*` in production!
+   - Use environment-based secrets
+   - Enable webhook signature verification
+
+4. **Monitoring**:
+   - Set up error logging
+   - Monitor order processing
+   - Track payment success rates
+   - Monitor email delivery
 
 ## Project Structure
 
 ```
-astroguru-ai-langgraph/
-├── config.py                 # Configuration and settings
-├── main.py                   # FastAPI application entry point
-├── requirements.txt          # Python dependencies
-├── Dockerfile                # Docker configuration for deployment
-├── render.yaml               # Render.com deployment configuration
-├── DEPLOYMENT.md             # Detailed deployment instructions
-├── graph/
+astroguru-ai/
+├── alembic/                   # Database migrations
+│   ├── versions/
+│   ├── env.py
+│   └── script.py.mako
+├── auth/                      # Authentication module
 │   ├── __init__.py
-│   ├── state.py              # AstroGuruState TypedDict
-│   ├── workflow.py           # LangGraph workflow definition
-│   └── nodes/
-│       ├── __init__.py
-│       ├── router_node.py    # Router for chat/analysis decision
-│       ├── main_node.py       # Birth details collection
-│       ├── location_node.py   # Location resolution with agent
-│       ├── chart_node.py      # Chart generation
-│       ├── dasha_node.py      # Dasha calculations
-│       ├── goal_analysis_node.py  # Goal analysis
-│       ├── recommendation_node.py # Recommendations
-│       ├── summarizer_node.py     # Summary generation
-│       └── chat_node.py           # Chat with context
-├── services/
+│   ├── jwt_handler.py        # JWT token handling
+│   ├── oauth.py              # Google OAuth
+│   ├── admin_auth.py         # Admin authentication
+│   └── dependencies.py       # FastAPI dependencies
+├── models/                    # Database models
 │   ├── __init__.py
-│   └── email_service.py      # Email service for sending reports
-└── tools/
-    ├── __init__.py
-    ├── geocoding_tools.py    # Geocoding API tools
-    └── vedastro_tools.py      # Astrology calculation tools
+│   ├── user.py
+│   ├── order.py
+│   └── payment.py
+├── services/                  # Business logic services
+│   ├── email_service.py
+│   ├── payment_service.py    # Razorpay integration
+│   └── order_service.py      # Order management
+├── static/                    # Frontend files
+│   ├── index.html
+│   ├── admin.html
+│   ├── app.js
+│   ├── auth.js
+│   ├── dashboard.js
+│   ├── admin.js
+│   └── style.css
+├── graph/                     # LangGraph workflow
+│   ├── nodes/
+│   ├── state.py
+│   └── workflow.py
+├── config.py                  # Configuration
+├── database.py                # Database connection
+├── main.py                    # FastAPI application
+├── requirements.txt
+├── alembic.ini
+└── .env.example
 ```
 
 ## License
@@ -498,4 +854,8 @@ Same as original astroguru-ai project.
 
 ## Support
 
-For issues or questions, please check the troubleshooting section or review the code documentation.
+For issues or questions:
+1. Check the troubleshooting section
+2. Review API documentation at `/docs`
+3. Check server logs for detailed error messages
+4. Verify all environment variables are set correctly

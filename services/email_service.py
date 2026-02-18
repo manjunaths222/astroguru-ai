@@ -358,8 +358,12 @@ async def send_analysis_email(
     dasha_analysis: Optional[str] = None,
     goal_analysis: Optional[str] = None,
     recommendations: Optional[str] = None
-) -> bool:
-    """Send astrology analysis report via email using Resend API"""
+) -> tuple[bool, Optional[str]]:
+    """Send astrology analysis report via email using Resend API
+    
+    Returns:
+        tuple[bool, Optional[str]]: (success, error_message)
+    """
     try:
         # Get Resend API key from environment
         resend_api_key = AstroConfig.AppSettings.RESEND_API_KEY
@@ -367,9 +371,10 @@ async def send_analysis_email(
         from_name = AstroConfig.AppSettings.RESEND_FROM_NAME
 
         if not resend_api_key:
-            logger.error("RESEND_API_KEY not configured. Please set RESEND_API_KEY environment variable.")
+            error_msg = "RESEND_API_KEY not configured. Please set RESEND_API_KEY environment variable."
+            logger.error(error_msg)
             logger.error("Get your API key from: https://resend.com/api-keys")
-            return False
+            return False, error_msg
         
         # Initialize Resend with API key
         resend.api_key = resend_api_key
@@ -414,14 +419,16 @@ AstroGuru AI - Your Personal Vedic Astrology Guide"""
                 logger.info(f"Analysis email sent successfully to {email} for {name} (Resend ID: {email_id})")
             else:
                 logger.info(f"Analysis email sent successfully to {email} for {name}")
-            return True
+            return True, None
         else:
-            logger.warning(f"Email sent but no response received for {email}")
-            return True  # Still return True as email was likely sent
+            error_msg = "Email sent but no response received from email service"
+            logger.warning(f"{error_msg} for {email}")
+            return True, None  # Still return True as email was likely sent
         
     except Exception as e:
         # Catch all exceptions (Resend SDK may raise various exceptions)
         error_type = type(e).__name__
-        logger.error(f"Failed to send email to {email} ({error_type}): {e}", exc_info=True)
-        return False
+        error_msg = f"Email sending failed ({error_type}): {str(e)}"
+        logger.error(f"Failed to send email to {email} - {error_msg}", exc_info=True)
+        return False, error_msg
 

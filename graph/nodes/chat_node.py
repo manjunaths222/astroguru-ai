@@ -6,9 +6,10 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_core.caches import BaseCache  # Import to resolve Pydantic v2 forward reference
 from config import AstroConfig, logger
 from graph.state import AstroGuruState
+from graph.constants import GOCHARA_CONTEXT
 
 
-CHAT_NODE_SYSTEM_PROMPT = """
+CHAT_NODE_SYSTEM_PROMPT = f"""
 You are a Professional Vedic Astrology Consultant helping users with astrology questions.
 
 **Two Modes of Operation:**
@@ -38,6 +39,14 @@ You are a Professional Vedic Astrology Consultant helping users with astrology q
 - If you don't know something, admit it rather than making it up
 - **Always consider the conversation history** - follow-up questions should be answered in context
 - Maintain continuity and coherence across the conversation
+
+{GOCHARA_CONTEXT}
+
+**When answering questions about transits, predictions, or timing:**
+- Use the Gochara (planetary transit) information provided above
+- Reference specific transit dates and periods when relevant
+- Combine transit information with chart analysis when available
+- Provide accurate timing predictions based on the transit data
 """
 
 
@@ -86,9 +95,10 @@ You are in general chat mode. Answer questions about Vedic astrology in general.
     # Build conversation - SystemMessage must be first (position 0) for Gemini
     conversation = [SystemMessage(content=system_content)]
     
-    # Add conversation history (last 20 messages to preserve more context for follow-ups)
-    # This ensures follow-up questions have sufficient context
+    # Add conversation history (all messages to maintain full context)
+    # This ensures follow-up questions have complete context including initial query
     history_count = 0
+    logger.info(f"Chat node: Adding {len(messages)} messages from conversation history")
     for msg in messages[-20:]:  # Increased from 10 to 20 for better context
         if msg.get("role") == "user":
             conversation.append(HumanMessage(content=msg.get("content", "")))
