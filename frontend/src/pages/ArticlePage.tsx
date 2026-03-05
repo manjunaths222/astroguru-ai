@@ -249,6 +249,7 @@ const ArticlePage = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/')}
             className="btn-primary"
           >
             Get Your Analysis

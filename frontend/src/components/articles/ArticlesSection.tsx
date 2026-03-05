@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ArticleCard from './ArticleCard';
 import api from '@/utils/api';
@@ -19,12 +20,14 @@ interface ArticlesSectionProps {
   title?: string;
   limit?: number;
   showCategories?: boolean;
+  showViewAllLink?: boolean;
 }
 
 const ArticlesSection = ({
   title = 'Vedic Astrology Blog',
   limit = 6,
   showCategories = true,
+  showViewAllLink = false,
 }: ArticlesSectionProps) => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -32,20 +35,13 @@ const ArticlesSection = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchArticles();
-    if (showCategories) {
-      fetchCategories();
-    }
-  }, [selectedCategory]);
-
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       
       const params = new URLSearchParams({
-        limit: Math.max(limit, 100).toString(),
+        limit: limit.toString(),
         offset: '0',
       });
 
@@ -54,23 +50,30 @@ const ArticlesSection = ({
       }
 
       const response = await api.get(`/api/v1/articles?${params}`);
-      setArticles(response.data.slice(0, limit));
+      setArticles(response.data);
     } catch (err) {
       console.error('Error fetching articles:', err);
       setError('Failed to load articles');
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCategory, limit]);
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await api.get('/api/v1/articles/categories');
       setCategories(response.data.categories || []);
     } catch (err) {
       console.error('Error fetching categories:', err);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchArticles();
+    if (showCategories) {
+      fetchCategories();
+    }
+  }, [fetchArticles, fetchCategories, showCategories]);
 
   return (
     <section className="py-20 relative overflow-hidden">
@@ -195,6 +198,24 @@ const ArticlesSection = ({
             {articles.map((article, index) => (
               <ArticleCard key={article.id} {...article} index={index} />
             ))}
+          </motion.div>
+        )}
+
+        {/* View All Articles - at the end */}
+        {showViewAllLink && !loading && articles.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="mt-16 text-center"
+          >
+            <Link
+              to="/articles"
+              className="inline-block px-8 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
+            >
+              View All Articles
+            </Link>
           </motion.div>
         )}
 

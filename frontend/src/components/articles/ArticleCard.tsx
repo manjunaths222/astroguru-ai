@@ -55,7 +55,7 @@ const ArticleCard = ({
       className="group"
     >
       <Link to={`/article/${slug}`}>
-        <div className="card h-full flex flex-col overflow-hidden hover:shadow-2xl transition-all duration-300">
+        <div className="card relative h-full flex flex-col overflow-hidden hover:shadow-2xl transition-all duration-300">
           {/* Featured Image */}
           {featured_image && (
             <div className="relative h-48 bg-gradient-to-br from-slate-700 to-slate-900 overflow-hidden">

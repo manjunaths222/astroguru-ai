@@ -1,7 +1,7 @@
 """Add articles table
 
 Revision ID: 004
-Revises: 003_add_chat_support
+Revises: 003_add_chat
 Create Date: 2024-03-05 12:00:00.000000
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '004'
-down_revision = '003_add_chat_support'
+down_revision = '003_add_chat'
 branch_labels = None
 depends_on = None
 

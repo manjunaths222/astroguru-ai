@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
-import Header from '@/components/layout/Header';
 import LoginButton from '@/components/auth/LoginButton';
 import BirthDetailsForm from '@/components/forms/BirthDetailsForm';
 import AboutSection from '@/components/sections/AboutSection';
@@ -43,7 +42,12 @@ const HomePage = () => {
                 className="flex flex-col sm:flex-row gap-4 justify-center"
               >
                 <LoginButton />
-                <button className="btn-secondary">Learn More</button>
+                <button
+                  className="btn-secondary"
+                  onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  Learn More
+                </button>
               </motion.div>
             </motion.div>
           </div>
@@ -58,7 +62,7 @@ const HomePage = () => {
         <AboutSection />
 
         {/* Articles Section */}
-        <ArticlesSection limit={6} showCategories={true} />
+        <ArticlesSection limit={6} showCategories={true} showViewAllLink={true} />
       </div>
     );
   }
@@ -180,7 +184,7 @@ const HomePage = () => {
       <AboutSection />
 
       {/* Articles Section */}
-      <ArticlesSection limit={6} showCategories={true} />
+      <ArticlesSection limit={6} showCategories={true} showViewAllLink={true} />
     </div>
   );
 };
