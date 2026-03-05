@@ -90,7 +90,7 @@ const ReportPage = () => {
   }
 
   const analysisData = order.analysis_data || {};
-  const birthDetails = order.birth_details || {};
+  const birthDetails = (order.birth_details || {}) as Record<string, any>;
 
   return (
     <AuthGuard>
