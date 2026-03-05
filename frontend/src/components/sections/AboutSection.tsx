@@ -45,36 +45,8 @@ const AboutSection = () => {
 
 
   return (
-    <section className="py-20 relative overflow-hidden bg-gradient-to-b from-background/50 via-background to-background/50">
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-20 -right-20 w-96 h-96 bg-secondary rounded-full mix-blend-multiply filter blur-3xl opacity-10"
-          animate={{
-            scale: [1, 1.1, 1],
-            y: [0, 30, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute -bottom-20 -left-20 w-96 h-96 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-10"
-          animate={{
-            scale: [1.1, 1, 1.1],
-            y: [0, -30, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 relative z-10">
+    <section className="py-24 md:py-32 relative overflow-hidden bg-slate-50 dark:bg-slate-900">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         {/* Main Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -83,18 +55,11 @@ const AboutSection = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-20"
         >
-          <motion.div
-            className="inline-block mb-4"
-            animate={{ rotate: [0, 5, 0, -5, 0] }}
-            transition={{ duration: 4, repeat: Infinity }}
-          >
-            <span className="text-5xl">✨</span>
-          </motion.div>
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 text-text-primary leading-tight">
-            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-400 to-secondary">AstroGuru</span>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900 dark:text-white">
+            About AstroGuru
           </h2>
-          <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
-            Bridging ancient Vedic wisdom with modern AI technology to unlock your cosmic destiny and guide your life's journey
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            Combining 5000 years of Vedic astrology wisdom with advanced AI to provide personalized cosmic insights that guide your life decisions.
           </p>
         </motion.div>
 
@@ -105,19 +70,13 @@ const AboutSection = () => {
               key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.15 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
-              whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(99, 102, 241, 0.15)' }}
-              className="card p-8 hover:shadow-2xl transition-all duration-300 border border-primary/10 hover:border-primary/30"
+              className="card p-8 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300"
             >
-            <motion.div
-              className="flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 mb-6 text-3xl"
-              whileHover={{ scale: 1.1 }}
-            >
-              {feature.icon}
-            </motion.div>
-              <h3 className="text-2xl font-bold mb-3 text-text-primary">{feature.title}</h3>
-              <p className="text-text-secondary text-lg">{feature.description}</p>
+              <div className="text-4xl mb-4">{feature.icon}</div>
+              <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">{feature.title}</h3>
+              <p className="text-slate-600 dark:text-slate-400">{feature.description}</p>
             </motion.div>
           ))}
         </div>
@@ -130,26 +89,21 @@ const AboutSection = () => {
           viewport={{ once: true }}
           className="mb-24"
         >
-          <h3 className="text-4xl font-bold text-center mb-12 text-text-primary">Our Services</h3>
-          <div className="grid md:grid-cols-2 gap-8">
+          <h3 className="text-3xl font-bold text-center mb-12 text-slate-900 dark:text-white">Our Services</h3>
+          <div className="grid md:grid-cols-2 gap-6">
             {services.map((service, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ x: 8 }}
-                className="flex gap-6 p-6 rounded-lg bg-background/50 border border-primary/10 hover:border-primary/30 transition-all"
+                className="flex gap-4 p-6 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all"
               >
-                <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-gradient-to-br from-primary/30 to-secondary/30 text-2xl">
-                    {service.icon}
-                  </div>
-                </div>
+                <div className="flex-shrink-0 text-3xl">{service.icon}</div>
                 <div>
-                  <h4 className="text-xl font-bold text-text-primary mb-2">{service.title}</h4>
-                  <p className="text-text-secondary">{service.description}</p>
+                  <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">{service.title}</h4>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">{service.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -162,26 +116,26 @@ const AboutSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="rounded-2xl bg-gradient-to-r from-primary/10 via-secondary/5 to-primary/10 border border-primary/20 p-12"
+          className="rounded-xl bg-indigo-50 dark:bg-slate-800 border border-indigo-200 dark:border-slate-700 p-12"
         >
-          <h3 className="text-3xl font-bold text-center mb-12 text-text-primary">Why AstroGuru Stands Out</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <h3 className="text-3xl font-bold text-center mb-12 text-slate-900 dark:text-white">Why Choose AstroGuru</h3>
+          <div className="grid md:grid-cols-4 gap-8">
             {[
-              { title: 'Accurate AI', desc: 'ML-powered predictions' },
-              { title: 'Expert Team', desc: 'Seasoned astrologers' },
-              { title: 'Instant Results', desc: 'Minutes, not days' },
-              { title: 'Complete Privacy', desc: 'Enterprise encryption' },
+              { title: 'Accurate', desc: 'AI-powered predictions' },
+              { title: 'Expert', desc: 'Seasoned astrologers' },
+              { title: 'Fast', desc: 'Instant analysis' },
+              { title: 'Private', desc: 'Enterprise security' },
             ].map((item, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
                 className="text-center"
               >
-                <h4 className="text-lg font-semibold text-text-primary mb-2">{item.title}</h4>
-                <p className="text-text-secondary">{item.desc}</p>
+                <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{item.title}</h4>
+                <p className="text-slate-600 dark:text-slate-400 text-sm">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -189,33 +143,33 @@ const AboutSection = () => {
 
         {/* Stats Section */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-20"
+          transition={{ duration: 0.6 }}
+          className="mt-20 pt-20 border-t border-slate-200 dark:border-slate-700"
         >
           <div className="grid md:grid-cols-3 gap-8">
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="text-center p-8 rounded-lg bg-background/50 border border-primary/10"
+              whileHover={{ y: -4 }}
+              className="text-center"
             >
-              <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary mb-2">10,000+</div>
-              <p className="text-text-secondary text-lg">Happy Users</p>
+              <div className="text-4xl md:text-5xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">10K+</div>
+              <p className="text-slate-600 dark:text-slate-400">Happy Users</p>
             </motion.div>
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="text-center p-8 rounded-lg bg-background/50 border border-primary/10"
+              whileHover={{ y: -4 }}
+              className="text-center"
             >
-              <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary mb-2">98%</div>
-              <p className="text-text-secondary text-lg">Satisfaction Rate</p>
+              <div className="text-4xl md:text-5xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">98%</div>
+              <p className="text-slate-600 dark:text-slate-400">Satisfaction</p>
             </motion.div>
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="text-center p-8 rounded-lg bg-background/50 border border-primary/10"
+              whileHover={{ y: -4 }}
+              className="text-center"
             >
-              <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary mb-2">5000+</div>
-              <p className="text-text-secondary text-lg">Accurate Predictions</p>
+              <div className="text-4xl md:text-5xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">5K+</div>
+              <p className="text-slate-600 dark:text-slate-400">Predictions</p>
             </motion.div>
           </div>
         </motion.div>
