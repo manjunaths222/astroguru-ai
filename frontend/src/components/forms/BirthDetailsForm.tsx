@@ -32,7 +32,6 @@ const BirthDetailsForm: React.FC<BirthDetailsFormProps> = ({ onSuccess, onCancel
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<{ lat: number | null, lon: number | null }>({ lat: null, lon: null });
   const [searchAbortController, setSearchAbortController] = useState<AbortController | null>(null);
-  const placeOfBirthValue = watch('placeOfBirth');
 
   // Handle place of birth input with autocomplete
   const handlePlaceInput = async (value: string) => {
@@ -147,8 +146,8 @@ const BirthDetailsForm: React.FC<BirthDetailsFormProps> = ({ onSuccess, onCancel
         dateOfBirth: data.dateOfBirth,
         timeOfBirth: data.timeOfBirth,
         placeOfBirth: data.placeOfBirth,
-        latitude: latitude,
-        longitude: longitude,
+        latitude: latitude || undefined,
+        longitude: longitude || undefined,
         goals: data.goals,
         ...(data.orderType === 'query' && data.userQuery ? { user_query: data.userQuery } : {}),
       };

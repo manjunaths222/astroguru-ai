@@ -10,7 +10,7 @@ interface AuthGuardProps {
 }
 
 const AuthGuard = ({ children, requireAdmin = false }: AuthGuardProps) => {
-  const { isAuthenticated, isAdmin, user } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
 
   if (!isAuthenticated) {
     return (
