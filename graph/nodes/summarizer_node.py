@@ -107,6 +107,8 @@ Your role is to synthesize all the specialized analysis from previous nodes (loc
 
 **Language Guidelines**:
 - Use plain, conversational language - write as if explaining to a friend
+- Should use general timeframes like "next year", "in a few years", "mid-2026" or "late 2027" rather than specific dates.
+- Should be in a way that is easy to understand and follow.
 - Avoid technical terms: Instead of "Dasha", say "life period" or "current phase". Instead of "Gochara transit", say "planetary movement" or just describe the effect
 - Instead of "Jupiter in your 10th house", say "favorable career influences" or "strong career support"
 - Instead of "Ketu-Ketu Dasha", say "a period of introspection" or "a time for reflection"
