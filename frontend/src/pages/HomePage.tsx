@@ -6,6 +6,8 @@ import Navbar from '@/components/layout/Navbar';
 import Header from '@/components/layout/Header';
 import LoginButton from '@/components/auth/LoginButton';
 import BirthDetailsForm from '@/components/forms/BirthDetailsForm';
+import AboutSection from '@/components/sections/AboutSection';
+import ArticlesSection from '@/components/articles/ArticlesSection';
 import api from '@/utils/api';
 import { Order } from '@/types';
 
@@ -18,6 +20,7 @@ const HomePage = () => {
     return (
       <div className="min-h-screen relative overflow-hidden">
         <Navbar />
+        
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div
@@ -61,6 +64,7 @@ const HomePage = () => {
           />
         </div>
         
+        {/* Hero Section */}
         <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -93,6 +97,12 @@ const HomePage = () => {
             </motion.div>
           </motion.div>
         </div>
+
+        {/* About Section */}
+        <AboutSection />
+
+        {/* Articles Section */}
+        <ArticlesSection limit={6} showCategories={true} />
       </div>
     );
   }
@@ -271,6 +281,12 @@ const HomePage = () => {
           </motion.div>
         )}
       </div>
+
+      {/* About Section */}
+      <AboutSection />
+
+      {/* Articles Section */}
+      <ArticlesSection limit={6} showCategories={true} />
     </div>
   );
 };

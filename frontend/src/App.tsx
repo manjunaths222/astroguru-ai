@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import HomePage from './pages/HomePage';
+import ArticlePage from './pages/ArticlePage';
 import DashboardPage from './pages/DashboardPage';
 import ChatPage from './pages/ChatPage';
 import ReportPage from './pages/ReportPage';
@@ -14,6 +15,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/article/:slug" element={<ArticlePage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/chat/:orderId" element={<ChatPage />} />
           <Route path="/report/generating/:orderId" element={<ReportGenerationPage />} />

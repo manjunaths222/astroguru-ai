@@ -34,6 +34,7 @@ from auth.dependencies import get_current_user_dependency, get_current_admin, ge
 from models.user import User
 from models.order import Order
 from models.payment import Payment
+from models.article import Article
 from sqlalchemy import select
 
 
@@ -98,6 +99,39 @@ class AdminLoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user_type: str = "admin"
+
+
+class ArticleResponse(BaseModel):
+    id: int
+    title: str
+    slug: str
+    excerpt: str
+    content: str
+    category: str
+    author: str
+    featured_image: Optional[str] = None
+    is_published: bool
+    view_count: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ArticleListResponse(BaseModel):
+    id: int
+    title: str
+    slug: str
+    excerpt: str
+    category: str
+    author: str
+    featured_image: Optional[str] = None
+    view_count: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
 
 
 # Global graph instance
@@ -1312,6 +1346,74 @@ async def chat(
         status_code=400,
         detail="Please use the order flow: create order -> pay -> analysis"
     )
+
+
+# ==================== Article Endpoints ====================
+
+@app.get("/api/v1/articles", response_model=List[ArticleListResponse])
+async def get_articles(
+    category: Optional[str] = Query(None),
+    limit: int = Query(10, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db)
+):
+    """Get published articles - publicly accessible"""
+    try:
+        query = db.query(Article).where(Article.is_published == True).order_by(Article.created_at.desc())
+        
+        if category:
+            query = query.where(Article.category == category)
+        
+        # Get total count
+        total = query.count()
+        
+        # Get paginated results
+        articles = query.offset(offset).limit(limit).all()
+        
+        return articles
+    except Exception as e:
+        logger.error(f"Error getting articles: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get articles")
+
+
+@app.get("/api/v1/articles/{slug}", response_model=ArticleResponse)
+async def get_article(
+    slug: str,
+    db: Session = Depends(get_db)
+):
+    """Get a single article by slug - publicly accessible"""
+    try:
+        article = db.query(Article).filter(Article.slug == slug).first()
+        
+        if not article:
+            raise HTTPException(status_code=404, detail="Article not found")
+        
+        if not article.is_published:
+            raise HTTPException(status_code=404, detail="Article not found")
+        
+        # Increment view count
+        article.view_count += 1
+        db.commit()
+        
+        return article
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting article: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get article")
+
+
+@app.get("/api/v1/articles/categories")
+async def get_article_categories(db: Session = Depends(get_db)):
+    """Get all article categories - publicly accessible"""
+    try:
+        categories = db.query(Article.category).distinct().filter(Article.is_published == True).all()
+        return {
+            "categories": [cat[0] for cat in categories if cat[0]]
+        }
+    except Exception as e:
+        logger.error(f"Error getting categories: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get categories")
 
 
 # Catch-all route for React Router (must be last, after all API routes)
