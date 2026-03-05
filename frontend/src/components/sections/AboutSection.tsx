@@ -146,7 +146,7 @@ const AboutSection = () => {
                   <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-gradient-to-br from-primary/30 to-secondary/30 text-2xl">
                     {service.icon}
                   </div>
-                </motion.div>
+                </div>
                 <div>
                   <h4 className="text-xl font-bold text-text-primary mb-2">{service.title}</h4>
                   <p className="text-text-secondary">{service.description}</p>
