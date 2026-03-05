@@ -13,7 +13,6 @@ const ReportGenerationPage = () => {
   const { isAuthenticated } = useAuth();
   const [order, setOrder] = useState<Order | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -33,7 +32,6 @@ const ReportGenerationPage = () => {
   const checkOrderStatus = async () => {
     if (!orderId) return;
     try {
-      setLoading(true);
       setError(null);
       const response = await api.get<Order>(`/api/v1/orders/${orderId}`);
       setOrder(response.data);
@@ -51,8 +49,6 @@ const ReportGenerationPage = () => {
     } catch (err: any) {
       console.error('Error checking order status:', err);
       setError(err.response?.data?.detail || 'Failed to check order status');
-    } finally {
-      setLoading(false);
     }
   };
 
