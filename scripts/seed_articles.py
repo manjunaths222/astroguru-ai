@@ -3,22 +3,30 @@
 import os
 import sys
 from datetime import datetime
+import psycopg2
+from psycopg2.extras import execute_values
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Get database URL from environment
+database_url = os.getenv(
+    "DATABASE_URL",
+    "postgresql://postgres:your_password@localhost:5432/astroguru"
+)
 
-from database import init_database, SessionLocal, Base, engine
-from models.article import Article
+# Convert async URL to sync URL if needed
+if "postgresql+asyncpg://" in database_url:
+    database_url = database_url.replace("postgresql+asyncpg://", "postgresql://")
 
 # Sample articles about Vedic Astrology
 SAMPLE_ARTICLES = [
-    {
-        "title": "Introduction to Vedic Astrology: Ancient Wisdom for Modern Times",
-        "slug": "introduction-vedic-astrology",
-        "excerpt": "Discover the foundations of Vedic Astrology, one of the oldest and most accurate systems of astrology known to humanity.",
-        "category": "Basics",
-        "author": "AstroGuru Team",
-        "content": """
+    (
+        "Introduction to Vedic Astrology: Ancient Wisdom for Modern Times",
+        "introduction-vedic-astrology",
+        "Discover the foundations of Vedic Astrology, one of the oldest and most accurate systems of astrology known to humanity.",
+        "Basics",
+        "AstroGuru Team",
+        "https://images.unsplash.com/photo-1545457521-b00b0e90d453?w=800&h=400&fit=crop",
+        """# Introduction to Vedic Astrology: Ancient Wisdom for Modern Times
+
 Vedic Astrology, also known as Jyotisha, is an ancient Indian system of astrology that has been practiced for thousands of years. Unlike Western astrology, Vedic astrology focuses on the sidereal zodiac and provides deep insights into your life's purpose, personality, and future.
 
 ## What Makes Vedic Astrology Different?
@@ -46,345 +54,347 @@ Each zodiac sign in Vedic Astrology has unique characteristics and is ruled by a
 
 A Vedic astrologer can help you understand your birth chart (Janam Kundli), identify auspicious times for important decisions, and guide you through life's challenges. Whether you're facing career dilemmas, relationship issues, or simply seeking spiritual guidance, Vedic Astrology offers profound insights.
 
-Start your journey with AstroGuru AI today and discover your cosmic destiny!
-""",
-        "featured_image": "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=500&h=300&fit=crop"
-    },
-    {
-        "title": "Understanding Your Birth Chart (Janam Kundli)",
-        "slug": "understanding-birth-chart",
-        "excerpt": "Learn how to read and interpret your natal chart - the cosmic snapshot at the moment of your birth.",
-        "category": "Basics",
-        "author": "AstroGuru Team",
-        "content": """
-Your Birth Chart, or Janam Kundli, is the cosmic blueprint of your life. It's a map of the exact positions of the planets at the moment of your birth, serving as a guide to your destiny, strengths, challenges, and opportunities.
-
-## The Components of Your Birth Chart
-
-### 1. The Twelve Houses (Bhavas)
-Each house represents a different area of your life:
-- **House 1** - Self, appearance, personality
-- **House 2** - Wealth, family, speech
-- **House 3** - Courage, siblings, communication
-- **House 4** - Home, mother, property, peace
-- **House 5** - Children, creativity, romance
-- **House 6** - Health, enemies, debts
-- **House 7** - Marriage, partnerships, public image
-- **House 8** - Longevity, transformation, occult
-- **House 9** - Fortune, higher education, spirituality
-- **House 10** - Career, reputation, public life
-- **House 11** - Gains, friends, achievements
-- **House 12** - Losses, separation, liberation
-
-### 2. The Ascendant (Lagna)
-The Ascendant is the zodiac sign on the eastern horizon at the exact moment and place of your birth. It represents your physical appearance, personality, and how you present yourself to the world.
-
-### 3. Planetary Positions
-The positions of the nine planets in various houses and signs reveal your talents, strengths, and challenges.
-
-### 4. Aspects (Drishti)
-Aspects are the angular relationships between planets. They indicate how different areas of your life are influenced by planetary energies.
-
-## How to Interpret Your Birth Chart
-
-To interpret your birth chart, you need:
-- Your exact birth time
-- Your birth date
-- Your birth location
-
-With this information, an astrologer can create an accurate Janam Kundli and provide detailed insights into your life journey.
-
-## Get Your Free Birth Chart Analysis
-
-Visit AstroGuru AI today to get your personalized birth chart analysis and unlock the secrets of your cosmic blueprint!
-""",
-        "featured_image": "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=500&h=300&fit=crop"
-    },
-    {
-        "title": "The Power of Planetary Transits and Their Impact on Your Life",
-        "slug": "planetary-transits-impact",
-        "excerpt": "Understand how current planetary movements influence your daily life and future prospects.",
-        "category": "Advanced",
-        "author": "AstroGuru Team",
-        "content": """
-Planetary Transits are the movements of planets through the zodiac, creating various astrological events throughout your life. These transits have a direct impact on your experiences, decisions, and destiny.
-
-## What are Transits?
-
-Transits occur when a planet moves into a specific house or forms an aspect with a planet in your natal chart. Each transit has a different duration and significance. Some transits last a few days, while others last years.
-
-## Major Planetary Transits
-
-### Saturn Transit (Sade Sati)
-The Saturn Return or Sade Sati is a significant 7.5-year period when Saturn transits through the zodiac sign where the Moon was at your birth. This period is often challenging but transformative, bringing maturity and wisdom.
-
-### Jupiter Transit
-Jupiter's transit brings expansion, prosperity, and opportunities. A beneficial Jupiter transit can open doors to success in various areas of life.
-
-### Mars Transit
-Mars transits bring energy, courage, and sometimes aggression. During favorable Mars transits, you may feel motivated to take action on your goals.
-
-### Rahu and Ketu Transits
-Rahu and Ketu transits (18.6-year cycles) bring significant life changes and spiritual growth. These are important periods for transformation.
-
-## How Transits Affect You
-
-Transits create opportunities and challenges based on:
-- Your natal chart
-- The planet in transit
-- The house or planet being transited
-- The aspect formed
-
-## Making the Most of Planetary Transits
-
-Understanding your planetary transits helps you:
-- Plan important life decisions
-- Prepare for challenges
-- Seize opportunities
-- Navigate life transitions smoothly
-
-Get personalized transit reports from AstroGuru AI and navigate your future with confidence!
-""",
-        "featured_image": "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=500&h=300&fit=crop"
-    },
-    {
-        "title": "Career Success Through Vedic Astrology: Finding Your Dharma",
-        "slug": "career-success-vedic-astrology",
-        "excerpt": "Discover your ideal career path and professional strengths using your birth chart analysis.",
-        "category": "Career",
-        "author": "AstroGuru Team",
-        "content": """
-Your career is one of the most important aspects of your life. Vedic Astrology can help you understand your natural talents, ideal career paths, and the best times to make career moves.
-
-## Career Houses in Your Birth Chart
+Start your journey with AstroGuru AI today and discover your cosmic destiny!""",
+    ),
+    (
+        "Understanding Your Birth Chart (Janam Kundli)",
+        "understanding-birth-chart",
+        "Learn how to read and interpret your Vedic birth chart to unlock the secrets of your destiny.",
+        "Birth Chart",
+        "Dr. Rajesh Sharma",
+        "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&h=400&fit=crop",
+        """# Understanding Your Birth Chart (Janam Kundli)
+
+Your birth chart, known as Janam Kundli in Vedic Astrology, is a snapshot of the planetary positions at the exact moment, date, and location of your birth. It's like a cosmic fingerprint that reveals your personality, life purpose, and destiny.
+
+## What Information Do You Need?
+
+To create an accurate Janam Kundli, you'll need:
+1. **Date of Birth** - The exact date you were born
+2. **Time of Birth** - As precise as possible (accurate to the minute)
+3. **Place of Birth** - The city and country where you were born
 
-### House 10 (Karma)
-The 10th house represents your career, reputation, and public image. Strong planets in this house indicate success in your professional life.
-
-### House 2 (Wealth)
-The 2nd house represents your earning potential and financial stability. Good placements here suggest prosperity.
-
-### House 5 (Creativity)
-The 5th house represents creative pursuits and intellectual work. This house is important for those in creative fields.
-
-## Planetary Indicators of Career Success
-
-- **Sun in strong position** - Leadership qualities, public recognition
-- **Mercury prominent** - Communication, business, trading
-- **Jupiter well-placed** - Teaching, law, spirituality, expansion
-- **Saturn strong** - Discipline, engineering, scientific work
-- **Mars in 10th** - Entrepreneurship, military, sports
-
-## Yogas for Career Success
-
-Certain planetary combinations (Yogas) create exceptional career opportunities:
-- **Rajayoga** - Royal combinations bringing power and success
-- **Dhanyoga** - Wealth-creating combinations
-- **Vidyayoga** - Combinations for knowledge and education
-
-## Finding Your Dharma (Life Purpose)
-
-Your birth chart reveals your Dharma - your unique life purpose and calling. By understanding this, you can align your career with your soul's mission.
-
-## Timing Your Career Moves
-
-Vedic Astrology helps identify auspicious times for:
-- Job changes or promotions
-- Starting a business
-- Major career decisions
-- Professional transformations
-
-Unlock your full career potential with personalized guidance from AstroGuru AI!
-""",
-        "featured_image": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=300&fit=crop"
-    },
-    {
-        "title": "Love, Marriage & Relationships: The Venus Factor in Your Chart",
-        "slug": "love-marriage-relationships",
-        "excerpt": "Explore how Venus and other planets influence your romantic destiny and relationship potential.",
-        "category": "Relationships",
-        "author": "AstroGuru Team",
-        "content": """
-Love and relationships are fundamental to human happiness. Vedic Astrology provides deep insights into your romantic nature, compatibility, and the timing of important relationship events.
-
-## Venus: The Planet of Love
-
-Venus is the planet governing love, beauty, and relationships. Its position in your birth chart reveals:
-- Your romantic nature
-- What you're attracted to
-- How you express love and affection
-- Your relationship potential
-
-## Houses of Relationships
-
-### House 7 (Marriage)
-The 7th house is the primary indicator of marriage and partnerships. Strong planets here indicate successful relationships.
-
-### House 5 (Romance)
-The 5th house represents romance, dating, and love affairs. This house is important for understanding your romantic inclinations.
-
-### House 8 (Intimacy)
-The 8th house represents intimate connections and transformation through relationships.
-
-## Relationship Compatibility (Synastry)
-
-Vedic Astrology uses Synastry - the comparison of two birth charts - to assess compatibility:
-- **Guna Milan** - Matching of 36 qualities
-- **Planetary Aspects** - How planets in each chart affect the other
-- **Vimshottari Dasha** - Favorable time periods for relationships
-
-## Marriage Timing
-
-Vedic Astrology helps identify:
-- Auspicious times for marriage
-- Potential marriage ages
-- Planetary periods (Dashas) favorable for marriage
-- Remedies for marriage delays
-
-## Common Relationship Challenges
-
-Certain planetary combinations can create relationship challenges:
-- **Saturn aspects to Venus** - Delays or distance in relationships
-- **Rahu/Ketu affecting 7th house** - Unconventional relationships
-- **Mars aspects** - Arguments and conflicts
-
-## Remedies for Relationship Harmony
-
-Vedic Astrology offers remedies including:
-- Gemstone recommendations
-- Mantra chanting
-- Ritual observances
-- Compatibility enhancements
-
-Discover your romantic destiny and find harmony in relationships with AstroGuru AI!
-""",
-        "featured_image": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&h=300&fit=crop"
-    },
-    {
-        "title": "Health & Wellness: Astrology's Approach to Well-being",
-        "slug": "health-wellness-astrology",
-        "excerpt": "Learn how planetary positions influence your physical health and overall wellness journey.",
-        "category": "Health",
-        "author": "AstroGuru Team",
-        "content": """
-Health is wealth, and Vedic Astrology offers unique insights into your physical and mental well-being. Your birth chart can reveal health tendencies and suggest preventive measures.
-
-## Health Houses in Astrology
-
-### House 1 (Ascendant)
-The 1st house represents your overall health and vitality.
-
-### House 6 (Health & Illness)
-The 6th house specifically governs health, diseases, and recovery. Weak planets here may indicate health challenges.
-
-### House 8 (Longevity)
-The 8th house represents lifespan and chronic conditions.
-
-## Planetary Influences on Health
-
-- **Sun** - Heart, vital energy, immunity
-- **Moon** - Mental health, emotional balance, immune system
-- **Mars** - Inflammation, accidents, surgery
-- **Mercury** - Nervous system, digestion, communication-related stress
-- **Jupiter** - Overall wellness, liver health
-- **Venus** - Reproductive health, skin conditions
-- **Saturn** - Chronic conditions, spine, skeletal system
-- **Rahu** - Confusion, infections, unusual diseases
-- **Ketu** - Weaknesses, hidden health issues
-
-## Health Analysis Through Your Chart
-
-A comprehensive health analysis considers:
-- Planetary positions in health houses
-- Aspects to health-indicating planets
-- Dashas (planetary periods) affecting health
-- Remedial measures
-
-## Preventive Health Measures
-
-Vedic Astrology recommends:
-- Gemstones to strengthen weak planets
-- Dietary recommendations based on your constitution
-- Yoga and meditation practices
-- Auspicious timing for surgeries and treatments
-- Herbal remedies aligned with your chart
-
-## Mental Health & Emotional Balance
-
-Your Moon sign and mental strength indicators reveal:
-- Emotional tendencies
-- Stress triggers
-- Peace-bringing activities
-- Meditation practices suitable for you
-
-## Wellness During Challenging Periods
-
-During difficult planetary periods (Dashas), specific wellness practices can maintain balance:
-- Strengthening foods
-- Spiritual practices
-- Medical check-ups
-- Lifestyle adjustments
-
-Achieve holistic health and wellness with personalized guidance from AstroGuru AI!
-""",
-        "featured_image": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&h=300&fit=crop"
-    }
+## The Twelve Houses (Bhavas)
+
+Your birth chart is divided into 12 houses, each representing different areas of your life:
+
+- **1st House** - Self, personality, physical appearance
+- **2nd House** - Wealth, finances, family
+- **3rd House** - Communication, siblings, short journeys
+- **4th House** - Home, property, mother, peace of mind
+- **5th House** - Children, creativity, romance, intelligence
+- **6th House** - Health, enemies, debts, day-to-day work
+- **7th House** - Marriage, partnerships, business
+- **8th House** - Inheritance, transformation, occult knowledge
+- **9th House** - Father, spirituality, luck, long journeys
+- **10th House** - Career, social status, public life
+- **11th House** - Friendships, gains, aspirations
+- **12th House** - Loss, expenses, isolation, spiritual liberation
+
+## How to Interpret Your Chart
+
+The interpretation of your birth chart involves understanding:
+- The sign (Rashi) in each house
+- The planets placed in each house
+- The aspects between planets
+- The strength and weakness of each planet
+
+## Get Your Birth Chart Analyzed
+
+With AstroGuru AI, you can upload your birth details and receive a detailed analysis of your Janam Kundli, including insights about your personality, career, relationships, and spiritual path.""",
+    ),
+    (
+        "The Twelve Zodiac Signs in Vedic Astrology (Rashis)",
+        "twelve-zodiac-signs",
+        "Explore the characteristics and traits of each Vedic zodiac sign and what they reveal about your personality.",
+        "Rashis",
+        "AstroGuru Team",
+        "https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=800&h=400&fit=crop",
+        """# The Twelve Zodiac Signs in Vedic Astrology (Rashis)
+
+In Vedic Astrology, there are twelve zodiac signs, each with unique characteristics, ruling planets, and symbolic representations. Your Sun sign (Rashi) is determined by the position of the Sun at the time of your birth.
+
+## The Twelve Rashis
+
+### 1. Aries (Mesha) - March 21 to April 19
+Ruled by Mars, Aries natives are courageous, adventurous, and passionate. They're natural leaders with a strong drive to succeed.
+
+### 2. Taurus (Vrishabha) - April 20 to May 20
+Ruled by Venus, Taurus natives are stable, reliable, and sensual. They appreciate the finer things in life and value security.
+
+### 3. Gemini (Mithuna) - May 21 to June 20
+Ruled by Mercury, Gemini natives are intelligent, communicative, and versatile. They love learning and exploring new ideas.
+
+### 4. Cancer (Karka) - June 21 to July 22
+Ruled by the Moon, Cancer natives are emotional, nurturing, and intuitive. They're deeply connected to their family and roots.
+
+### 5. Leo (Simha) - July 23 to August 22
+Ruled by the Sun, Leo natives are confident, creative, and charismatic. They love being in the spotlight and inspiring others.
+
+### 6. Virgo (Kanya) - August 23 to September 22
+Ruled by Mercury, Virgo natives are analytical, practical, and detail-oriented. They strive for perfection in all they do.
+
+### 7. Libra (Tula) - September 23 to October 22
+Ruled by Venus, Libra natives are balanced, diplomatic, and artistic. They seek harmony in all relationships and situations.
+
+### 8. Scorpio (Vrishchika) - October 23 to November 21
+Ruled by Mars (and Pluto in modern astrology), Scorpio natives are intense, mysterious, and transformative. They're deeply intuitive and powerful.
+
+### 9. Sagittarius (Dhanu) - November 22 to December 21
+Ruled by Jupiter, Sagittarius natives are adventurous, optimistic, and philosophical. They're seekers of truth and wisdom.
+
+### 10. Capricorn (Makara) - December 22 to January 19
+Ruled by Saturn, Capricorn natives are disciplined, ambitious, and responsible. They climb the mountain of success with determination.
+
+### 11. Aquarius (Kumbha) - January 20 to February 18
+Ruled by Saturn (and Uranus in modern astrology), Aquarius natives are innovative, humanitarian, and independent. They're visionaries of the future.
+
+### 12. Pisces (Meena) - February 19 to March 20
+Ruled by Jupiter, Pisces natives are compassionate, artistic, and spiritual. They're dreamers who connect with the invisible realms.
+
+## Find Your Rashi
+
+Discover which Rashi you belong to and unlock deeper insights into your personality, strengths, and challenges with AstroGuru AI.""",
+    ),
+    (
+        "Planetary Dashas: Understanding Your Life Timeline",
+        "planetary-dashas",
+        "Explore the concept of Dashas in Vedic Astrology and how they reveal the timeline of your life.",
+        "Advanced",
+        "Pt. Arun Bansal",
+        "https://images.unsplash.com/photo-1444080748397-f442aa95c3e5?w=800&h=400&fit=crop",
+        """# Planetary Dashas: Understanding Your Life Timeline
+
+In Vedic Astrology, Dasha systems are one of the most important predictive tools. A Dasha is a period during which a particular planet has significant influence on your life. Understanding your Dasha timeline can help you navigate life's challenges and opportunities.
+
+## What Are Dashas?
+
+Dashas are planetary periods that determine the timing of events in your life. They're calculated based on the position of the Moon at the time of your birth. Each Dasha lasts for a specific number of years, and during this period, that planet influences various aspects of your life.
+
+## The Main Dasha System: Vimshottari Dasha
+
+The most commonly used Dasha system is the Vimshottari Dasha, which has a total cycle of 120 years. The sequence of planets in Vimshottari Dasha is:
+
+1. **Ketu** - 7 years
+2. **Venus** - 20 years
+3. **Sun** - 6 years
+4. **Moon** - 10 years
+5. **Mars** - 7 years
+6. **Rahu** - 18 years
+7. **Jupiter** - 16 years
+8. **Saturn** - 19 years
+9. **Mercury** - 17 years
+
+## Sub-Dashas (Bhuktis)
+
+Each main Dasha is further divided into sub-periods called Bhuktis. These Bhuktis provide more detailed insights into specific events during a Dasha period.
+
+## How Dashas Affect Your Life
+
+During a favorable Dasha:
+- You may experience growth, success, and positive changes
+- New opportunities and relationships may come into your life
+- Your overall well-being and happiness increase
+
+During a challenging Dasha:
+- You may face obstacles, delays, and difficult situations
+- You should exercise caution in important decisions
+- This is a time to build strength and resilience
+
+## Remedies During Challenging Dashas
+
+If you're going through a challenging Dasha, Vedic Astrology suggests:
+- Wearing gemstones associated with favorable planets
+- Performing rituals and prayers
+- Practicing meditation and yoga
+- Seeking guidance from an experienced astrologer
+
+Get a detailed Dasha analysis with AstroGuru AI and plan your life accordingly!""",
+    ),
+    (
+        "Remedies in Vedic Astrology: Gemstones, Mantras, and Rituals",
+        "vedic-astrology-remedies",
+        "Discover the powerful remedies in Vedic Astrology to mitigate planetary challenges and enhance positive influences.",
+        "Remedies",
+        "Swami Anand Nath",
+        "https://images.unsplash.com/photo-1516714712202-4e88e84fbf6c?w=800&h=400&fit=crop",
+        """# Remedies in Vedic Astrology: Gemstones, Mantras, and Rituals
+
+Vedic Astrology doesn't just predict your future—it also offers remedies to mitigate challenging planetary influences and enhance positive ones. These remedies have been used for centuries to transform lives.
+
+## The Power of Gemstones (Ratnas)
+
+Gemstones are one of the most popular remedies in Vedic Astrology. Each planet is associated with specific gemstones:
+
+- **Sun** - Ruby (Manik)
+- **Moon** - Pearl (Moti)
+- **Mars** - Red Coral (Moonga)
+- **Mercury** - Emerald (Panna)
+- **Jupiter** - Yellow Sapphire (Pukhraj)
+- **Venus** - Diamond (Heera)
+- **Saturn** - Blue Sapphire (Neelam)
+- **Rahu** - Hessonite (Gomedh)
+- **Ketu** - Agate (Vaidurya)
+
+## The Importance of Proper Gemstone Selection
+
+It's crucial to:
+- Consult an astrologer to determine which gemstones are suitable for you
+- Ensure the gemstone is authentic and of good quality
+- Have the gemstone properly energized before wearing
+- Wear the gemstone on the correct finger and day
+
+## The Power of Mantras
+
+Reciting mantras associated with planets can help reduce negative effects:
+
+- **Surya Mantra** (Sun): "Om Suryaya Namah"
+- **Chandra Mantra** (Moon): "Om Chandraya Namah"
+- **Mangal Mantra** (Mars): "Om Angarakaya Namah"
+- **Budh Mantra** (Mercury): "Om Budhaya Namah"
+- **Guru Mantra** (Jupiter): "Om Brihaspataye Namah"
+- **Shukra Mantra** (Venus): "Om Shukraya Namah"
+- **Shani Mantra** (Saturn): "Om Shanaye Namah"
+
+## Rituals and Practices
+
+Other effective remedies include:
+- **Yajnas** - Vedic fire rituals performed by priests
+- **Charity** - Donating to those in need
+- **Fasting** - Observing fasts on specific days
+- **Yoga and Meditation** - Balancing mind and body
+- **Puja** - Performing worship rituals
+
+## The Science Behind Remedies
+
+These remedies work by:
+- Aligning your energy with the cosmic vibrations
+- Reducing the negative effects of malefic planets
+- Strengthening the positive influences in your chart
+- Promoting inner peace and spiritual growth
+
+Explore personalized remedies for your unique birth chart with AstroGuru AI!""",
+    ),
+    (
+        "Career and Finance: What Your Birth Chart Reveals",
+        "career-finance-astrology",
+        "Learn how to use your Vedic birth chart to guide your career decisions and improve your financial prospects.",
+        "Career",
+        "Rajiv Chopra",
+        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=400&fit=crop",
+        """# Career and Finance: What Your Birth Chart Reveals
+
+Your Vedic birth chart contains valuable insights into your career potential, financial prospects, and the best paths for success. By understanding these planetary influences, you can make informed decisions about your professional life.
+
+## The Houses of Career and Finance
+
+### 10th House - Career and Public Life
+The 10th house represents your career, professional reputation, and social status. The planet ruling this house and its position indicate your career potential and the types of professions that suit you.
+
+### 11th House - Income and Gains
+The 11th house governs income from profession, business gains, and financial growth. A strong 11th house indicates financial success and abundance.
+
+### 2nd House - Wealth and Resources
+The 2nd house represents accumulated wealth, family resources, and financial stability. Its condition reveals your relationship with money.
+
+## Planets and Career
+
+- **Sun** - Leadership roles, government jobs, administration
+- **Moon** - Tourism, hospitality, creative fields, nursing
+- **Mars** - Military, police, engineering, sports
+- **Mercury** - Communication, teaching, writing, business
+- **Jupiter** - Law, religion, higher education, finance
+- **Venus** - Entertainment, arts, fashion, luxury goods
+- **Saturn** - Agriculture, mining, construction, hard work
+
+## Favorable Periods for Career Changes
+
+Your Dasha timeline reveals the most auspicious periods for:
+- Changing jobs or starting a business
+- Taking on new responsibilities
+- Launching a new venture
+- Seeking promotion or recognition
+
+## Financial Remedies
+
+If your chart shows financial challenges:
+- Wear recommended gemstones
+- Recite prosperity mantras daily
+- Practice charity and give to those in need
+- Invest during favorable planetary periods
+- Follow your astrologer's guidance on auspicious days
+
+## Timing Your Decisions
+
+By understanding your birth chart and Dasha timeline, you can:
+- Choose the best time to launch a business
+- Make investments during favorable periods
+- Plan major financial decisions
+- Avoid making important decisions during challenging periods
+
+Unlock your financial potential with a detailed career and finance analysis from AstroGuru AI!""",
+    ),
 ]
 
 
 def seed_articles():
-    """Populate the articles table with sample data"""
-    
-    # Initialize database
-    init_database()
-    
-    # Create tables if they don't exist
-    Base.metadata.create_all(bind=engine)
-    
-    # Get database session
-    db = SessionLocal()
-    
+    """Seed the database with sample articles"""
     try:
-        # Check if articles already exist
-        existing_count = db.query(Article).count()
+        conn = psycopg2.connect(database_url)
+        cursor = conn.cursor()
         
-        if existing_count > 0:
-            print(f"✓ Database already contains {existing_count} articles. Skipping seed...")
+        print("[v0] Connected to database successfully")
+        
+        # Create articles table if it doesn't exist
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS articles (
+            id SERIAL PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            slug VARCHAR(255) UNIQUE NOT NULL,
+            excerpt TEXT NOT NULL,
+            content TEXT NOT NULL,
+            category VARCHAR(100),
+            author VARCHAR(255),
+            featured_image VARCHAR(500),
+            is_published BOOLEAN DEFAULT TRUE,
+            view_count INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        print("[v0] Articles table created/exists")
+        
+        # Check if articles already exist
+        cursor.execute("SELECT COUNT(*) FROM articles")
+        count = cursor.fetchone()[0]
+        
+        if count > 0:
+            print(f"[v0] {count} articles already exist. Skipping seed.")
+            cursor.close()
+            conn.close()
             return
         
-        print("🌱 Seeding Vedic Astrology articles...")
+        # Insert sample articles
+        insert_query = """
+        INSERT INTO articles (title, slug, excerpt, category, author, featured_image, content, is_published, view_count, created_at, updated_at)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
         
-        # Create article objects
-        articles = []
-        for article_data in SAMPLE_ARTICLES:
-            article = Article(
-                title=article_data["title"],
-                slug=article_data["slug"],
-                excerpt=article_data["excerpt"],
-                content=article_data["content"],
-                category=article_data["category"],
-                author=article_data["author"],
-                featured_image=article_data.get("featured_image"),
-                is_published=True,
-                view_count=0
-            )
-            articles.append(article)
+        now = datetime.utcnow()
+        values = [(title, slug, excerpt, category, author, image, content, True, 0, now, now) 
+                  for title, slug, excerpt, category, author, image, content in SAMPLE_ARTICLES]
         
-        # Add all articles to database
-        db.add_all(articles)
-        db.commit()
+        cursor.executemany(insert_query, values)
+        conn.commit()
         
-        print(f"✓ Successfully seeded {len(articles)} articles!")
-        print("  Articles added:")
-        for article in articles:
-            print(f"    - {article.title}")
-            
+        print(f"[v0] Successfully seeded {len(SAMPLE_ARTICLES)} articles into the database")
+        
+        cursor.close()
+        conn.close()
+        
     except Exception as e:
-        db.rollback()
-        print(f"✗ Error seeding articles: {str(e)}")
+        print(f"[v0] Error seeding articles: {e}")
         raise
-    finally:
-        db.close()
 
 
 if __name__ == "__main__":

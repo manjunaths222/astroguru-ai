@@ -1,6 +1,48 @@
 import { motion } from 'framer-motion';
+import { Star, Zap, Heart, Brain, Target, Sparkles } from 'lucide-react';
 
 const AboutSection = () => {
+  const coreFeatures = [
+    {
+      icon: <Brain className="w-8 h-8" />,
+      title: 'Vedic Expertise',
+      description: '5000+ years of proven Vedic astrology wisdom',
+    },
+    {
+      icon: <Zap className="w-8 h-8" />,
+      title: 'AI-Powered Analysis',
+      description: 'Lightning-fast AI-driven analysis and insights',
+    },
+    {
+      icon: <Heart className="w-8 h-8" />,
+      title: 'Personalized',
+      description: 'Customized readings tailored to your unique chart',
+    },
+  ];
+
+  const services = [
+    {
+      icon: <Star className="w-6 h-6" />,
+      title: 'Birth Chart Analysis',
+      description: 'Complete Janam Kundli interpretation',
+    },
+    {
+      icon: <Target className="w-6 h-6" />,
+      title: 'Career Guidance',
+      description: 'Unlock your professional potential',
+    },
+    {
+      icon: <Sparkles className="w-6 h-6" />,
+      title: 'Relationship Insights',
+      description: 'Love and compatibility analysis',
+    },
+    {
+      icon: <Heart className="w-6 h-6" />,
+      title: 'Health Predictions',
+      description: 'Wellness and healing guidance',
+    },
+  ];
+
   const features = [
     {
       icon: '✨',
@@ -45,11 +87,11 @@ const AboutSection = () => {
   };
 
   return (
-    <section className="py-20 relative overflow-hidden">
+    <section className="py-20 relative overflow-hidden bg-gradient-to-b from-background/50 via-background to-background/50">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute -top-20 -left-20 w-96 h-96 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-10"
+          className="absolute -top-20 -right-20 w-96 h-96 bg-secondary rounded-full mix-blend-multiply filter blur-3xl opacity-10"
           animate={{
             scale: [1, 1.1, 1],
             y: [0, 30, 0],
@@ -60,169 +102,162 @@ const AboutSection = () => {
             ease: 'easeInOut',
           }}
         />
+        <motion.div
+          className="absolute -bottom-20 -left-20 w-96 h-96 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-10"
+          animate={{
+            scale: [1.1, 1, 1.1],
+            y: [0, -30, 0],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 relative z-10">
-        {/* Main About Section */}
+        {/* Main Header */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="mb-20"
+          className="text-center mb-20"
         >
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
+          <motion.div
+            className="inline-block mb-4"
+            animate={{ rotate: [0, 5, 0, -5, 0] }}
+            transition={{ duration: 4, repeat: Infinity }}
+          >
+            <span className="text-5xl">✨</span>
+          </motion.div>
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 text-text-primary leading-tight">
+            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-400 to-secondary">AstroGuru</span>
+          </h2>
+          <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
+            Bridging ancient Vedic wisdom with modern AI technology to unlock your cosmic destiny and guide your life's journey
+          </p>
+        </motion.div>
+
+        {/* Core Features Grid */}
+        <div className="grid md:grid-cols-3 gap-8 mb-24">
+          {coreFeatures.map((feature, index) => (
             <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.15 }}
               viewport={{ once: true }}
+              whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(99, 102, 241, 0.15)' }}
+              className="card p-8 hover:shadow-2xl transition-all duration-300 border border-primary/10 hover:border-primary/30"
             >
-              <motion.h2
-                variants={itemVariants}
-                className="text-4xl md:text-5xl font-bold text-text-primary mb-6"
-              >
-                Welcome to <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">AstroGuru AI</span>
-              </motion.h2>
-
-              <motion.p
-                variants={itemVariants}
-                className="text-text-secondary text-lg mb-4 leading-relaxed"
-              >
-                Discover the ancient wisdom of Vedic Astrology enhanced with cutting-edge artificial intelligence. AstroGuru AI brings you personalized astrological insights that guide your life decisions, reveal your cosmic purpose, and illuminate your path to success and happiness.
-              </motion.p>
-
-              <motion.p
-                variants={itemVariants}
-                className="text-text-secondary text-lg mb-6 leading-relaxed"
-              >
-                Whether you're seeking clarity on career choices, relationship compatibility, health concerns, or spiritual growth, our AI-powered analysis of your birth chart provides comprehensive guidance grounded in thousands of years of Vedic traditions.
-              </motion.p>
-
               <motion.div
-                variants={itemVariants}
-                className="flex flex-wrap gap-4"
+                className="flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 mb-6 text-primary"
+                whileHover={{ scale: 1.1, rotate: 10 }}
               >
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="btn-primary"
-                >
-                  Get Started
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="btn-secondary"
-                >
-                  Learn More
-                </motion.button>
+                {feature.icon}
               </motion.div>
+              <h3 className="text-2xl font-bold mb-3 text-text-primary">{feature.title}</h3>
+              <p className="text-text-secondary text-lg">{feature.description}</p>
             </motion.div>
+          ))}
+        </div>
 
-            {/* Right Visual */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative h-96 hidden md:block"
-            >
+        {/* Services Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="mb-24"
+        >
+          <h3 className="text-4xl font-bold text-center mb-12 text-text-primary">Our Services</h3>
+          <div className="grid md:grid-cols-2 gap-8">
+            {services.map((service, index) => (
               <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-3xl blur-2xl"
-                animate={{
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 5, -5, 0],
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-              />
-              <div className="absolute inset-0 card flex items-center justify-center text-6xl">
-                🔮
-              </div>
-            </motion.div>
+                key={index}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ x: 8 }}
+                className="flex gap-6 p-6 rounded-lg bg-background/50 border border-primary/10 hover:border-primary/30 transition-all"
+              >
+                <div className="flex-shrink-0">
+                  <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-gradient-to-br from-primary/30 to-secondary/30 text-primary">
+                    {service.icon}
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-text-primary mb-2">{service.title}</h4>
+                  <p className="text-text-secondary">{service.description}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
 
-        {/* Features Section */}
+        {/* Why Choose Us Section */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          className="rounded-2xl bg-gradient-to-r from-primary/10 via-secondary/5 to-primary/10 border border-primary/20 p-12"
         >
-          <motion.h3
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold text-text-primary text-center mb-16"
-          >
-            Our Services & Features
-          </motion.h3>
-
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-          >
-            {features.map((feature, index) => (
+          <h3 className="text-3xl font-bold text-center mb-12 text-text-primary">Why AstroGuru Stands Out</h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { title: 'Accurate AI', desc: 'ML-powered predictions' },
+              { title: 'Expert Team', desc: 'Seasoned astrologers' },
+              { title: 'Instant Results', desc: 'Minutes, not days' },
+              { title: 'Complete Privacy', desc: 'Enterprise encryption' },
+            ].map((item, index) => (
               <motion.div
                 key={index}
-                variants={itemVariants}
-                whileHover={{ y: -10, shadow: '0 20px 40px rgba(0,0,0,0.3)' }}
-                className="card"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="text-center"
               >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 + 0.3 }}
-                  className="text-5xl mb-4"
-                >
-                  {feature.icon}
-                </motion.div>
-                <h4 className="text-xl font-bold text-text-primary mb-3">{feature.title}</h4>
-                <p className="text-text-secondary leading-relaxed">{feature.description}</p>
+                <h4 className="text-lg font-semibold text-text-primary mb-2">{item.title}</h4>
+                <p className="text-text-secondary">{item.desc}</p>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         </motion.div>
 
-        {/* Why Choose Us */}
+        {/* Stats Section */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-20 card bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/30"
+          className="mt-20"
         >
           <div className="grid md:grid-cols-3 gap-8">
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="text-center"
+              className="text-center p-8 rounded-lg bg-background/50 border border-primary/10"
             >
-              <div className="text-4xl font-bold text-primary mb-2">10,000+</div>
-              <p className="text-text-secondary">Happy Users</p>
+              <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary mb-2">10,000+</div>
+              <p className="text-text-secondary text-lg">Happy Users</p>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="text-center"
+              className="text-center p-8 rounded-lg bg-background/50 border border-primary/10"
             >
-              <div className="text-4xl font-bold text-primary mb-2">98%</div>
-              <p className="text-text-secondary">Satisfaction Rate</p>
+              <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary mb-2">98%</div>
+              <p className="text-text-secondary text-lg">Satisfaction Rate</p>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="text-center"
+              className="text-center p-8 rounded-lg bg-background/50 border border-primary/10"
             >
-              <div className="text-4xl font-bold text-primary mb-2">5000+</div>
-              <p className="text-text-secondary">Accurate Predictions</p>
+              <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary mb-2">5000+</div>
+              <p className="text-text-secondary text-lg">Accurate Predictions</p>
             </motion.div>
           </div>
         </motion.div>
