@@ -12,7 +12,6 @@ const ReportGenerationPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
