@@ -1,20 +1,19 @@
 import { motion } from 'framer-motion';
-import { Star, Zap, Heart, Brain, Target, Sparkles } from 'lucide-react';
 
 const AboutSection = () => {
   const coreFeatures = [
     {
-      icon: <Brain className="w-8 h-8" />,
+      icon: '🧠',
       title: 'Vedic Expertise',
       description: '5000+ years of proven Vedic astrology wisdom',
     },
     {
-      icon: <Zap className="w-8 h-8" />,
+      icon: '⚡',
       title: 'AI-Powered Analysis',
       description: 'Lightning-fast AI-driven analysis and insights',
     },
     {
-      icon: <Heart className="w-8 h-8" />,
+      icon: '💫',
       title: 'Personalized',
       description: 'Customized readings tailored to your unique chart',
     },
@@ -22,47 +21,24 @@ const AboutSection = () => {
 
   const services = [
     {
-      icon: <Star className="w-6 h-6" />,
+      icon: '📊',
       title: 'Birth Chart Analysis',
       description: 'Complete Janam Kundli interpretation',
     },
     {
-      icon: <Target className="w-6 h-6" />,
+      icon: '🎯',
       title: 'Career Guidance',
       description: 'Unlock your professional potential',
     },
     {
-      icon: <Sparkles className="w-6 h-6" />,
+      icon: '✨',
       title: 'Relationship Insights',
       description: 'Love and compatibility analysis',
     },
     {
-      icon: <Heart className="w-6 h-6" />,
+      icon: '💚',
       title: 'Health Predictions',
       description: 'Wellness and healing guidance',
-    },
-  ];
-
-  const features = [
-    {
-      icon: '✨',
-      title: 'AI-Powered Analysis',
-      description: 'Advanced AI combines Vedic astrology with modern technology for accurate insights',
-    },
-    {
-      icon: '🔮',
-      title: 'Comprehensive Reports',
-      description: 'Detailed birth chart analysis, planetary transits, and life predictions',
-    },
-    {
-      icon: '💬',
-      title: 'Expert Guidance',
-      description: 'Interactive chat support to answer your specific astrology questions',
-    },
-    {
-      icon: '📊',
-      title: 'Personalized Insights',
-      description: 'Custom recommendations based on your unique birth chart and cosmic energy',
     },
   ];
 
@@ -134,12 +110,12 @@ const AboutSection = () => {
               whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(99, 102, 241, 0.15)' }}
               className="card p-8 hover:shadow-2xl transition-all duration-300 border border-primary/10 hover:border-primary/30"
             >
-              <motion.div
-                className="flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 mb-6 text-primary"
-                whileHover={{ scale: 1.1, rotate: 10 }}
-              >
-                {feature.icon}
-              </motion.div>
+            <motion.div
+              className="flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 mb-6 text-3xl"
+              whileHover={{ scale: 1.1 }}
+            >
+              {feature.icon}
+            </motion.div>
               <h3 className="text-2xl font-bold mb-3 text-text-primary">{feature.title}</h3>
               <p className="text-text-secondary text-lg">{feature.description}</p>
             </motion.div>
@@ -167,10 +143,10 @@ const AboutSection = () => {
                 className="flex gap-6 p-6 rounded-lg bg-background/50 border border-primary/10 hover:border-primary/30 transition-all"
               >
                 <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-gradient-to-br from-primary/30 to-secondary/30 text-primary">
+                  <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-gradient-to-br from-primary/30 to-secondary/30 text-2xl">
                     {service.icon}
                   </div>
-                </div>
+                </motion.div>
                 <div>
                   <h4 className="text-xl font-bold text-text-primary mb-2">{service.title}</h4>
                   <p className="text-text-secondary">{service.description}</p>
